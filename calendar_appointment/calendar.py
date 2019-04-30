@@ -16,3 +16,14 @@ class Meeting(models.Model):
     """
 
     _inherit = 'calendar.event'
+
+class appointment(models.Model):
+	
+	_name = 'calendar.appointment'
+	
+	
+	
+class spot(models.Model)
+
+	_name = 'calender.appointment.spot'
+	
