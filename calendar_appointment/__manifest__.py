@@ -32,6 +32,7 @@ Its a calendar.
     'website': 'http://www.vertel.se',
     'depends': ['calendar'],
     'data': [
+		'calendar_appointment.xml'
     ],
     'installable': True,
 }
