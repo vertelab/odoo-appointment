@@ -30,14 +30,11 @@ Its a calendar.
     'author': 'Vertel AB',
     'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
-<<<<<<< HEAD
     'depends': ['calendar'],
     'data': [
-		# ~ 'calendar_spot.xml'
-=======
-    'depends': ['base'],
-    'data': ['security/ir.model.access.csv'
->>>>>>> bf6288a1e9869fe237b9ca3bfe33141e8fe97278
+		'calendar_spot.xml'
+		# ~ 'calendar_appointment.xml'
+		'security/ir.model.access.csv'
     ],
     'installable': True,
 }
