@@ -24,14 +24,14 @@
     'name': 'Calendar Appointment',
     'version': '0.1',
     'category': 'Calendar',
-    'description': u"""
+    'description': """
 Its a calendar.
 """,
     'author': 'Vertel AB',
     'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
-    'depends': ['calendar'],
-    'data': [
+    'depends': ['base'],
+    'data': ['security/ir.model.access.csv'
     ],
     'installable': True,
 }
