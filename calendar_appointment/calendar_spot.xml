@@ -1,18 +1,16 @@
 <odoo>
 
-
-
-
-	<record model="ir.ui.view" id="view_id">
-		<field name="name">view.name</field>
-		<field name="model">calendar.appointment.spot</field>
-		<field name="priority" eval="16"/>
-		<field name="arch" type="xml">
-			<tree string="Appointments spot">
-				<field name="name"/>
-				<field name="appointment_id"/>
-			</tree>
+	<record id="spot_menu_action" model="ir.actions.act_window">
+		<field name="name">Calendar spots</field>
+		<field name="res_model">calendar.appointment.spot</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[]</field>
+		<field name="help" type="html">
+			<p class="oe_view_nocontent_create">Create the first spot</p>
 		</field>
 	</record>
-	<menuitem id="spot" parent="menu_root" name="Spot" sequence="10" action="view_id"/>
+
+	<menuitem id="calendar_appointment" name="Calendar appointment"/>
+	<menuitem id="calendar_spot_menu" parent="calendar_appointment" name="Calendar spot" action="spot_menu_action"/>
 </odoo>
