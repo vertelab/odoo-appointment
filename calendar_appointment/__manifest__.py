@@ -32,7 +32,7 @@ Its a calendar.
     'website': 'http://www.vertel.se',
     'depends': ['calendar'],
     'data': [
-		'calendar_spot.xml'
+		# ~ 'calendar_spot.xml'
 		# ~ 'calendar_appointment.xml'
 		'security/ir.model.access.csv'
     ],

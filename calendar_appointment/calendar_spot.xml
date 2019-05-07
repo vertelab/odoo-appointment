@@ -1,0 +1,18 @@
+<odoo>
+
+
+
+
+	<record model="ir.ui.view" id="view_id">
+		<field name="name">view.name</field>
+		<field name="model">calendar.appointment.spot</field>
+		<field name="priority" eval="16"/>
+		<field name="arch" type="xml">
+			<tree string="Appointments spot">
+				<field name="name"/>
+				<field name="appointment_id"/>
+			</tree>
+		</field>
+	</record>
+
+</odoo>
