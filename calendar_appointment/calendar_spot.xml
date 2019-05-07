@@ -14,5 +14,5 @@
 			</tree>
 		</field>
 	</record>
-
+	<menuitem id="spot" parent="menu_root" name="Spot" sequence="10" action="view_id"/>
 </odoo>
