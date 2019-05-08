@@ -1,0 +1,35 @@
+<odoo>
+<!--
+	<record id="spot_calendar_view" model="ir.ui.view">
+		<field name="name">calendar.appointment.spot</field>
+		<field name="model">calendar.appointment.spot</field>
+		<field name="arch" type="xml">
+			<calendar date_start="date_start" duration="duration" string="Spots">
+				<field name="name"/>
+			</calendar>
+		</field>
+	</record>
+-->
+	<record id="appointment_menu_action" model="ir.actions.act_window">
+		<field name="name">Calendar appointment</field>
+		<field name="res_model">calendar.appointment</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[]</field>
+		<field name="help" type="html">
+			<p class="oe_view_nocontent_create">Create the first appointment</p>
+		</field>
+	</record>
+	<record id="spot_menu_action" model="ir.actions.act_window">
+		<field name="name">Calendar spot</field>
+		<field name="res_model">calendar.appointment.spot</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[]</field>
+		<field name="help" type="html">
+			<p class="oe_view_nocontent_create">Create the first spot</p>
+		</field>
+	</record>
+	<menuitem id="calendar_menu" name="Calendar appointment" action="appointment_menu_action"/>
+	<menuitem id="calendar_spot_menu" parent="calendar_menu" name="Spot" action="spot_menu_action"/>
+</odoo>
