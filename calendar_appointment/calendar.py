@@ -33,7 +33,25 @@ class calendar_appointment_spot(models.Model):
     appointment_id = fields.Many2one(comodel_name='calendar.appointment')
     partner_ids = fields.Many2many(comodel_name='res.partner')
     calendar_id = fields.Many2one(comodel_name='calendar.event')
-    note = fields.Text(string='Note field') 
-	# ~ date_start = fields.DateTime(string = 'Date start')
-	# ~ duration = fields.Integer(string = 'Duration')
+    note = fields.Text(string='Note field')
+    date_start = fields.Datetime(string = 'Date start')
+    duration = fields.Float(string = 'Duration')
 	# ~ date_end = 
+	
+class calendar_event(models.Model):
+	
+	_inherit = 'calendar.event'
+	
+	
+	appointment_id = fields.Many2one(comodel_name='calendar.appointment')
+	
+	
+class Wizard(models.TransientModel):
+	_name = 'calendar.wizard'
+	_description = 'Wizard for adding spots'
+	
+	def _default_session(self):
+		return self.env['calendar.session'].browse(self._context.get('active_id'))
+	
+	session_id = fields.Many2one('calendar.session', string='Session', required=True)
+	attendee_ids = fields.Many2many('res.partner', string='Attendees')
