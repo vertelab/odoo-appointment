@@ -1,5 +1,5 @@
 <odoo>
-	<record id="view_calendar_event_form" model="ir.ui.view">
+   <record id="view_calendar_event_form" model="ir.ui.view">
       <field name="name">qwewk</field>
       <field name="model">calendar.event</field>
       <field name="inherit_id" ref="calendar.view_calendar_event_form" />
@@ -121,30 +121,29 @@
          <p class="oe_view_nocontent_create">Create the first spot</p>
       </field>
    </record>
-
-        <record model="ir.ui.view" id="wizard_form_view">
-            <field name="name">wizard.form</field>
-            <field name="model">calendar.wizard</field>
-            <field name="arch" type="xml">
-                <form string="Add Attendees">
-                    <group>
-                        <field name="session_id"/>
-                        <field name="attendee_ids"/>
-                    </group>
-                </form>
-            </field>
-        </record>
-
-        <act_window id="launch_session_wizard"
-                    name="Add Attendees"
-                    src_model="calendar.session"
-                    res_model="calendar.wizard"
-                    view_mode="form"
-                    target="new"
-                    key2="client_action_multi"/>
-
+   <!--Wizard-->
+   <record model="ir.ui.view" id="wizard_form_view">
+      <field name="name">wizard.form</field>
+      <field name="model">calendar.appointment.wizard</field>
+      <field name="arch" type="xml">
+         <form string="Add Attendees">
+            <group>
+               <field name="date_start" string="Starting date" />
+               <field name="date_stop" string="Ending date" />
+               <field name="duration" string="Spot Duration" />
+               <field name="nmbr_spots" string="Number of Spots" />
+               <field name="nmbr_spots_per_day" string="Number of Spots per day" />
+            </group>
+            <footer>
+               <button type="object" name="create_spots" string="Create" class="btn-success" />
+               <button special="cancel" string="Discard" class="btn-danger" />
+            </footer>
+         </form>
+      </field>
+   </record>
+   <act_window id="launch_session_wizard" name="Add Appointment" src_model="calendar.appointment" res_model="calendar.appointment.wizard" view_mode="form" target="new" key2="client_action_multi" />
    <!--/-->
+   <menuitem id="session_menu" name="Session" parent="calendar_menu" action="launch_session_wizard" />
    <menuitem id="calendar_menu" name="Appointment" action="appointment_menu_action" />
    <menuitem id="calendar_spot_menu" parent="calendar_menu" name="Spot" action="spot_menu_action" />
-   <!--/-->
 </odoo>
