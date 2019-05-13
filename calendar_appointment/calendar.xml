@@ -128,14 +128,15 @@
       <field name="arch" type="xml">
          <form string="Add Attendees">
             <group>
-               <field name="date_start" string="Starting date" />
-               <field name="date_stop" string="Ending date" />
-               <field name="duration" string="Spot Duration" />
-               <field name="nmbr_spots" string="Number of Spots" />
-               <field name="nmbr_spots_per_day" string="Number of Spots per day" />
+               <field name="date_start" string="Starting date and time" />
+               <field name="date_stop" string="Ending date and time" />
+               <field name="duration" string="Spot duration" />
+               <field name="nmbr_spots" string="Number of spots" />
+               <field name="nmbr_spots_per_day" string="Number of spots per day" />
             </group>
             <footer>
                <button type="object" name="create_spots" string="Create" class="btn-success" />
+               <button type="object" name="test_function" string="Test" class="btn-primary" />
                <button special="cancel" string="Discard" class="btn-danger" />
             </footer>
          </form>

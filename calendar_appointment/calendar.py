@@ -1,6 +1,6 @@
 import odoo
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, Warning
 import logging
 from datetime import timedelta, time
 
@@ -54,12 +54,23 @@ class Wizard(models.TransientModel):
 	def _default_appointment(self):
 		return self.env['calendar.appointment'].browse(self._context.get('active_id'))
 	
-	date_start = fields.Datetime(string='Start Date')
-	date_stop = fields.Datetime(string='Stop Date')
+	date_start = fields.Datetime(string='Start Date', required=True)
+	date_stop = fields.Datetime(string='Stop Date', required=True)
 	duration = fields.Float(string='Duration')
 	nmbr_spots = fields.Integer(string='Number of Spots')
 	nmbr_spots_per_day = fields.Integer(string='Number of spots per day')
 	
+	@api.one
+	def test_function(self):
+		appointment = self._default_appointment()
+		if not appointment and appointment.user_id:
+			raise Warning(_("appointment or user missing, please choose an appointment and user"))
+		
+		event_list = self.env['calendar.event'].search([('start_date','>=',self.date_start), ('stop_date', '<=',self.date_stop), ('user_id', '=', appointment.user_id.id)])
+		event_list2 = self.env['calendar.event'].search([])
+		
+		raise Warning("hej %s %s %s %s %s"% (event_list, event_list2, self.date_start, self.date_stop, appointment.user_id))
+			
 	@api.multi
 	def create_spots(self):
 		new_day = 0
@@ -71,28 +82,28 @@ class Wizard(models.TransientModel):
 			while spots_per_day_i <= self.nmbr_spots_per_day and spots_i <= self.nmbr_spots:
 				
 				appointment = self._default_appointment()
+				
+				if not appointment and appointment.user_id:
+					raise Warning(_('Appointment or user missing, please choose an appointment and user'))
+				
 				event_list = self.env['calendar.event'].search([('start_date','>=',self.date_start), ('stop_date', '<=',self.date_stop), ('user_id', '=', appointment.user_id.id)])
-				# ~ event_list_item = event_list[spots_per_day_i-1]
 				
+				#filtered_list = event_list.filtered(lambda r: r.event_list.contains())
+								
 				spot_datetime = self.date_start + timedelta(hours=((spots_per_day_i - 1) * self.duration), days=new_day)
-				# ~ _logger.warn(spot_datetime)
 				
-				if event_list:
-					_logger.warn("THIS IS SPARTA")
-					
 				spot_ids.append(self.env['calendar.appointment.spot'].create({
 				'date_start' : spot_datetime,
 				'date_end' : self.date_stop,
 				'appointment_id' : self._context.get('active_id'),
 				'duration' : self.duration}).id)
-			
+				
+				
 				spots_per_day_i += 1
 				spots_i += 1
 				
 			new_day += 1
 		action = self.env['ir.actions.act_window'].for_xml_id('calendar_appointment', 'spot_menu_action')
 		action['domain'] = [('id', 'in', spot_ids)]
-		# ~ _logger.warn(action)
 		
-		_logger.warn(event_list)
 		return action
