@@ -68,41 +68,56 @@ class Wizard(models.TransientModel):
 		
 		event_list = self.env['calendar.event'].search([('start_date','>=',self.date_start), ('stop_date', '<=',self.date_stop), ('user_id', '=', appointment.user_id.id)])
 		event_list2 = self.env['calendar.event'].search([])
+				
+				# ~ filtered_list = spot_list.filtered(lambda r: r.event_list.contains())
 		
-		raise Warning("hej %s %s %s %s %s"% (event_list, event_list2, self.date_start, self.date_stop, appointment.user_id))
+		raise Warning("hej %s %s %s %s %s %s %s"% (union_list, intersect_list, event_list, event_list2, self.date_start, self.date_stop, appointment.user_id))
 			
 	@api.multi
 	def create_spots(self):
 		new_day = 0
-		spots_i = 1
-		
+		spots_i = 0
+		spots_per_day_i = 0
+		appointment = self._default_appointment()
+		event_list = self.env['calendar.event'].search([('start_date','>=',self.date_start), ('stop_date', '<=',self.date_stop), ('user_id', '=', appointment.user_id.id)])
 		spot_ids = []
-		while spots_i <= self.nmbr_spots:
-			spots_per_day_i = 1
-			while spots_per_day_i <= self.nmbr_spots_per_day and spots_i <= self.nmbr_spots:
-				
-				appointment = self._default_appointment()
+		
+		while spots_i < self.nmbr_spots:
+			while spots_per_day_i < self.nmbr_spots_per_day and spots_i < self.nmbr_spots:
+	
 				
 				if not appointment and appointment.user_id:
 					raise Warning(_('Appointment or user missing, please choose an appointment and user'))
 				
-				event_list = self.env['calendar.event'].search([('start_date','>=',self.date_start), ('stop_date', '<=',self.date_stop), ('user_id', '=', appointment.user_id.id)])
+				# Nuvarande tiden för en spot att skapas på. 
+				spot_datetime = self.date_start + timedelta(hours=((spots_per_day_i) * self.duration), days=new_day)	
 				
-				#filtered_list = event_list.filtered(lambda r: r.event_list.contains())
-								
-				spot_datetime = self.date_start + timedelta(hours=((spots_per_day_i - 1) * self.duration), days=new_day)
+				colliding_spots = self.env['calendar.event'].search([
+					"|",
+						"&",
+							('start_datetime', '<=', spot_datetime),
+							('stop_datetime', '>=', spot_datetime),
+						"&",
+							('start_datetime', '<=', self.date_stop),
+							('stop_datetime', '>=', self.date_stop)]) 
 				
-				spot_ids.append(self.env['calendar.appointment.spot'].create({
-				'date_start' : spot_datetime,
-				'date_end' : self.date_stop,
-				'appointment_id' : self._context.get('active_id'),
-				'duration' : self.duration}).id)
 				
+				if not colliding_spots:	
+					spot_ids.append(self.env['calendar.appointment.spot'].create({
+					'date_start' : spot_datetime,
+					'date_end' : self.date_stop,
+					'appointment_id' : self._context.get('active_id'),
+					'duration' : self.duration}).id)
+					spots_i += 1
 				
+					
 				spots_per_day_i += 1
-				spots_i += 1
+				
+				
+				
 				
 			new_day += 1
+		
 		action = self.env['ir.actions.act_window'].for_xml_id('calendar_appointment', 'spot_menu_action')
 		action['domain'] = [('id', 'in', spot_ids)]
 		
