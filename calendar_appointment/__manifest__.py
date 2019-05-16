@@ -30,7 +30,7 @@ Its a calendar.
     'author': 'Vertel AB',
     'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
-    'depends': ['calendar'],
+    'depends': ['calendar', 'mail', 'contacts'],
     'data': [
 		'calendar.xml', 
 		'security/ir.model.access.csv'

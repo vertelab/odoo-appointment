@@ -22,8 +22,18 @@ class calendar_appointment(models.Model):
 	description = fields.Text(string = 'Descriptions')
 	meeting_type = fields.Selection([('One2one', 'One to One'),('Many2one', 'Many to One'),], 'Type Selections') # Ena värdet visa i dropdown och andra lagras i DB:n
 	date_due = fields.Date(string = 'Dates')
+	attendee_ids_str = fields.Char(compute='compute_attendee_ids_str')
 
+	def compute_attendee_ids_str(self):
+		self.attendee_ids_str = ','.join([str(a.id) for a in self.attendee_ids])
 	
+	@api.multi
+	def send_invitation_template(self):
+		template = self.env.ref('calendar_appointment.invitation_model')
+		template.send_mail(self.id)
+		
+		
+		
 class calendar_appointment_spot(models.Model):
 
     _name = 'calendar.appointment.spot'
@@ -47,6 +57,7 @@ class calendar_event(models.Model):
 	appointment_id = fields.Many2one(comodel_name='calendar.appointment')
 	
 	# ~ På en appointment, lägg till spots. Wizard: Välj antal, längd, när på dagen för första spot och antal spots per dag.
+
 class Wizard(models.TransientModel):
 	_name = 'calendar.appointment.wizard'
 	_description = 'Wizard for adding spots'
@@ -68,42 +79,61 @@ class Wizard(models.TransientModel):
 		
 		event_list = self.env['calendar.event'].search([('start_date','>=',self.date_start), ('stop_date', '<=',self.date_stop), ('user_id', '=', appointment.user_id.id)])
 		event_list2 = self.env['calendar.event'].search([])
+				
+				# ~ filtered_list = spot_list.filtered(lambda r: r.event_list.contains())
 		
-		raise Warning("hej %s %s %s %s %s"% (event_list, event_list2, self.date_start, self.date_stop, appointment.user_id))
+		raise Warning("hej %s %s %s %s %s %s %s"% (union_list, intersect_list, event_list, event_list2, self.date_start, self.date_stop, appointment.user_id))
 			
 	@api.multi
 	def create_spots(self):
-		new_day = 0
-		spots_i = 1
-		
+		spots_created = 0
+		appointment = self._default_appointment()
+		# ~ event_list = self.env['calendar.event'].search([('start_date','>=',self.date_start), ('stop_date', '<=',self.date_stop), ('user_id', '=', appointment.user_id.id)])
 		spot_ids = []
-		while spots_i <= self.nmbr_spots:
-			spots_per_day_i = 1
-			while spots_per_day_i <= self.nmbr_spots_per_day and spots_i <= self.nmbr_spots:
+		divider = 1
+		current_startdate = self.date_start
+		
+		if not appointment and appointment.user_id:
+				raise Warning(_('Appointment or user missing, please choose an appointment and user'))
 				
-				appointment = self._default_appointment()
+		days_counter = 0
+		i = 0
+		while spots_created < self.nmbr_spots:
+			if self.nmbr_spots_per_day == spots_created/divider:
+				#Tillfällig
+				# ~ current_startdate = timedelta(hours=(self.duration * (self.nmbr_spots_per_day + i))) 
+				current_startdate = self.date_start + timedelta(days = days_counter)
+				divider += 1
 				
-				if not appointment and appointment.user_id:
-					raise Warning(_('Appointment or user missing, please choose an appointment and user'))
+			colliding_spots = self.env['calendar.event'].search([
+				('start_datetime', '>=', current_startdate),
+				('stop_datetime', '<=', current_startdate),
+				"&",
+				('start_datetime', '<=', self.date_stop),
+				('stop_datetime', '>=', self.date_stop)])
 				
-				event_list = self.env['calendar.event'].search([('start_date','>=',self.date_start), ('stop_date', '<=',self.date_stop), ('user_id', '=', appointment.user_id.id)])
 				
-				#filtered_list = event_list.filtered(lambda r: r.event_list.contains())
-								
-				spot_datetime = self.date_start + timedelta(hours=((spots_per_day_i - 1) * self.duration), days=new_day)
-				
+			if not colliding_spots:	
 				spot_ids.append(self.env['calendar.appointment.spot'].create({
-				'date_start' : spot_datetime,
-				'date_end' : self.date_stop,
+				'date_start' : current_startdate,
+				'date_end' : current_startdate + timedelta(hours=self.duration),
 				'appointment_id' : self._context.get('active_id'),
 				'duration' : self.duration}).id)
+				i += 1
+			
+			current_startdate += timedelta(hours=self.duration)
+			
+			spots_created += 1
 				
-				
-				spots_per_day_i += 1
-				spots_i += 1
-				
-			new_day += 1
+			
 		action = self.env['ir.actions.act_window'].for_xml_id('calendar_appointment', 'spot_menu_action')
 		action['domain'] = [('id', 'in', spot_ids)]
 		
+		
+		
 		return action
+		
+				# Nuvarande tiden för en spot att skapas på. 
+				# ~ spot_starttime = self.date_start + timedelta(hours=((spots_per_day_i) * self.duration), days=new_day)	
+				# ~ spot_endtime = spot_starttime + timedelta(hours=(self.duration))
+				
