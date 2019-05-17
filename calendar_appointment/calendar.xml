@@ -1,6 +1,21 @@
 <odoo>
+   <record model="mail.template" id="invitation_model">
+      <field name="name">Invitation email</field>
+      <field name="model_id" ref="model_calendar_appointment" />
+      <field name="email_from">${object.user_id.email}</field>
+      <field name="subject">Inbjudan till ${object.name}</field>
+      <field name="partner_to">${",".join([str(a.id) for a in object.attendee_ids])}</field>
+      <field name="lang" />
+      <field name="body_html">
+         <![CDATA[
+                  <p>Hej! ${object.attendee_ids.name},
+                  ${object.user_id.partner_id.name}, bjöd in dig till 
+                  ${object.name}, ett möte av ${object.user_id.company_id.name}. </p>
+         ]]>
+      </field>
+   </record>
    <record id="view_calendar_event_form" model="ir.ui.view">
-      <field name="name">qwewk</field>
+      <field name="name">Calendar event</field>
       <field name="model">calendar.event</field>
       <field name="inherit_id" ref="calendar.view_calendar_event_form" />
       <field name="arch" type="xml">
@@ -38,6 +53,9 @@
       <field name="name">create appointment</field>
       <field name="model">calendar.appointment</field>
       <field name="arch" type="xml">
+         <header>
+            <button name="send_invitation_template" string="Send invite" type="object" class="oe_highlight" />
+         </header>
          <form string="appointment form">
             <sheet>
                <group>
@@ -121,17 +139,6 @@
          <p class="oe_view_nocontent_create">Create the first spot</p>
       </field>
    </record>
-   <!--test button-->
-<!--
-   <record id="spot_menu_button" model="ir.actions.act_window">
-      <field name="name">Calendar Appointment button</field>
-      <field name="res_model">calendar.appointment.button</field>
-      <field name="view_type">form</field>
-      <field name="view_mode">tree,form</field>
-      <field name="domain">[]</field>
-      <field name="help" type="html" />
-   </record>
--->
    <!--Wizard-->
    <record model="ir.ui.view" id="wizard_form_view">
       <field name="name">wizard.form</field>
@@ -158,7 +165,7 @@
    <menuitem id="calendar_menu" name="Appointment" action="appointment_menu_action" />
    <menuitem id="session_menu" name="Session" parent="calendar_menu" action="launch_session_wizard" />
    <menuitem id="calendar_spot_menu" parent="calendar_menu" name="Spot" action="spot_menu_action" />
-<!--
-   <menuitem id="button_menu" name="send_email" parent="calendar_menu" action="spot_menu_button" />
--->
+   <!--
+        <menuitem id="button_menu" name="send_email" parent="calendar_menu" action="spot_menu_button" />
+   -->
 </odoo>

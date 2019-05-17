@@ -3,6 +3,8 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, Warning
 import logging
 from datetime import timedelta, time
+import odoo.http as http
+from odoo.http import request
 
 
 _logger = logging.getLogger(__name__)
@@ -22,8 +24,18 @@ class calendar_appointment(models.Model):
 	description = fields.Text(string = 'Descriptions')
 	meeting_type = fields.Selection([('One2one', 'One to One'),('Many2one', 'Many to One'),], 'Type Selections') # Ena värdet visa i dropdown och andra lagras i DB:n
 	date_due = fields.Date(string = 'Dates')
+	attendee_ids_str = fields.Char(compute='compute_attendee_ids_str')
 
+	def compute_attendee_ids_str(self):
+		self.attendee_ids_str = ','.join([str(a.id) for a in self.attendee_ids])
 	
+	@api.multi
+	def send_invitation_template(self):
+		template = self.env.ref('calendar_appointment.invitation_model')
+		template.send_mail(self.id)
+		
+		
+		
 class calendar_appointment_spot(models.Model):
 
     _name = 'calendar.appointment.spot'
@@ -47,6 +59,7 @@ class calendar_event(models.Model):
 	appointment_id = fields.Many2one(comodel_name='calendar.appointment')
 	
 	# ~ På en appointment, lägg till spots. Wizard: Välj antal, längd, när på dagen för första spot och antal spots per dag.
+
 class Wizard(models.TransientModel):
 	_name = 'calendar.appointment.wizard'
 	_description = 'Wizard for adding spots'
@@ -85,31 +98,30 @@ class Wizard(models.TransientModel):
 		if not appointment and appointment.user_id:
 				raise Warning(_('Appointment or user missing, please choose an appointment and user'))
 				
+		days_counter = 0
 		i = 0
 		while spots_created < self.nmbr_spots:
-
-			
 			if self.nmbr_spots_per_day == spots_created/divider:
 				#Tillfällig
 				# ~ current_startdate = timedelta(hours=(self.duration * (self.nmbr_spots_per_day + i))) 
-				current_startdate += timedelta(days=1)
+				current_startdate = self.date_start + timedelta(days = days_counter)
 				divider += 1
 				
-			# ~ colliding_spots = self.env['calendar.event'].search([
-					# ~ ('start_datetime', '>=', spot_starttime),
-					# ~ ('stop_datetime', '<=', spot_endtime)])
-					# ~ "&",
-						# ~ ('start_datetime', '<=', self.date_stop),
-						# ~ ('stop_datetime', '>=', self.date_stop)]) 
+			colliding_spots = self.env['calendar.event'].search([
+				('start_datetime', '>=', current_startdate),
+				('stop_datetime', '<=', current_startdate),
+				"&",
+				('start_datetime', '<=', self.date_stop),
+				('stop_datetime', '>=', self.date_stop)])
 				
 				
-			# ~ if not colliding_spots:	
-			spot_ids.append(self.env['calendar.appointment.spot'].create({
-			'date_start' : current_startdate,
-			'date_end' : current_startdate + timedelta(hours=self.duration),
-			'appointment_id' : self._context.get('active_id'),
-			'duration' : self.duration}).id)
-			i += 1
+			if not colliding_spots:	
+				spot_ids.append(self.env['calendar.appointment.spot'].create({
+				'date_start' : current_startdate,
+				'date_end' : current_startdate + timedelta(hours=self.duration),
+				'appointment_id' : self._context.get('active_id'),
+				'duration' : self.duration}).id)
+				i += 1
 			
 			current_startdate += timedelta(hours=self.duration)
 			
@@ -123,21 +135,16 @@ class Wizard(models.TransientModel):
 		
 		return action
 		
+		
 				# Nuvarande tiden för en spot att skapas på. 
 				# ~ spot_starttime = self.date_start + timedelta(hours=((spots_per_day_i) * self.duration), days=new_day)	
 				# ~ spot_endtime = spot_starttime + timedelta(hours=(self.duration))
 				
-				# ~ colliding_spots = self.env['calendar.event'].search([
-						# ~ ('start_datetime', '>=', spot_starttime),
-						# ~ ('stop_datetime', '<=', spot_endtime)])
-						# ~ "&",
-							# ~ ('start_datetime', '<=', self.date_stop),
-							# ~ ('stop_datetime', '>=', self.date_stop)]) 
-				
-				
-				# ~ if not colliding_spots:	
-					# ~ spot_ids.append(self.env['calendar.appointment.spot'].create({
-					# ~ 'date_start' : spot_starttime,
-					# ~ 'date_end' : self.date_stop,
-					# ~ 'appointment_id' : self._context.get('active_id'),
-					# ~ 'duration' : self.duration}).id)
+class MyController(http.Controller):
+	# skapa en variabel innan /appointment, returnera en render, http get, post
+	# https://www.cybrosys.com/blog/web-controllers-in-odoo
+    @route('/appointment_id', type="http", website="true", auth='public')
+    def handler(self, **kwargs):
+		handler=request.env['calendar.appointment.spot'].sudo().search([])
+        return request.render('vår template', {'något':handler})
+	
