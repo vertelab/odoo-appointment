@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_event_registration_form" model="ir.ui.view">
+        <field name="name">event.registration.form.marielund</field>
+        <field name="model">event.registration</field>
+        <field name="inherit_id" ref="event.view_event_registration_form" />
+        <field name="arch" type="xml">
+            <group name="attendee" position="inside">
+                <field name="address" />
+            </group>
+			<sheet position="inside">
+				<field name="note" />
+			</sheet>
+        </field>
+    </record>
+    <record id="view_event_form" model="ir.ui.view">
+        <field name="name">event.form.marielund</field>
+        <field name="model">event.event</field>
+        <field name="inherit_id" ref="event.view_event_form" />
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Kortbeskrivning">
+                    <field name="short_desc" />
+                </page>
+            </notebook>
+        </field>
+    </record>
+    <template id="layout" inherit_id="website_event.layout">
+        <!-- STYLING BREADCRUMBS -->
+        <xpath expr="//a[@href='/event']/.." position="replace">
+            <li>
+                <a href="/event">Alla Program</a>
+            </li>
+        </xpath>
+        <!-- REMOVE COUNTRY -->
+        <xpath expr="//li[@t-if='event.country_id']/.." position="replace" />
+    </template>
+    <!-- REMOVE ANNOYING DATES ON EVENT PAGE -->
+    <template id="event_details" inherit_id="website_event.event_details">
+        <xpath expr="//h4[@class='text-center text-muted']" position="attributes">
+            <attribute name="class">text-center text-muted hidden</attribute>
+        </xpath>
+        <xpath expr="//h4[@class='text-center text-muted']" position="attributes">
+            <attribute name="class">text-center text-muted hidden</attribute>
+        </xpath>
+    </template>
+    <!-- INDEX EVENT -->
+    <template id="registration_template" inherit_id="website_event.registration_template">
+        <xpath expr="//th[2]" position="attributes">
+            <attribute name="class">hidden</attribute>
+        </xpath>
+        <xpath expr="//th[3]" position="attributes">
+            <attribute name="class">hidden</attribute>
+        </xpath>
+        <xpath expr="//th[4]" position="attributes">
+            <attribute name="class">o_th_price hidden</attribute>
+        </xpath>        
+        <!-- CHANGE FROM EVENT REGISTRATION -->
+        <!-- <td>Event Registration</td> -->
+        <xpath expr="//td[1]" position="replace">
+			<td><strong>Anmälan</strong></td>
+        </xpath>
+        <xpath expr="//td[2]" position="attributes">
+            <attribute name="class">hidden</attribute>
+        </xpath>
+        <!-- HIDE DATES -->
+        <xpath expr="//td[3]" position="attributes">
+            <attribute name="class">hidden</attribute>
+        </xpath>
+        <!-- REMOVE DATES IN REGISTRATION -->
+        <xpath expr="//tr[1]" position="attributes">
+            <attribute name="class">hidden</attribute>
+        </xpath>
+        <!-- REGISTER :: FROM DEFAULT 0 - 10 PPL >> TO 1 - 4 PPL -->
+        <xpath expr="//t[@t-as='nb']" position="attributes">
+            <attribute name="t-foreach">range(1, (event.seats_availability == 'unlimited' or event.seats_available > 4) and 5 or event.seats_available+1)</attribute>
+        </xpath>
+        <!-- MAKING BUTTON GREEN AND NOT DEFAULT BLUE -->
+        <xpath expr="//button[@class='btn btn-primary btn-lg pull-right a-submit']" position="attributes">
+            <attribute name="class">btn btn-success btn-lg pull-right a-submit</attribute>
+        </xpath>
+    </template>
+    <template id="event_description_full" inherit_id="website_event.event_description_full">
+        <!-- REMOVING DESCRIPTION -->
+        <xpath expr="//div[@itemprop='description']" position="replace" />
+        <xpath expr="//div[@class='col-md-8']" position="before">
+            <div itemprop="description" t-field="event.description" />
+        </xpath>
+        <xpath expr="//div[@class='col-md-8']" position="attributes">
+            <attribute name="class">col-md-offset-3 col-md-6</attribute>
+            <attribute name="style">padding: 0px;</attribute>
+        </xpath>
+        <xpath expr="//div[@class='panel panel-default'][1]" position="attributes">
+            <attribute name="class">panel panel-default hidden</attribute>
+        </xpath>
+        <xpath expr="//div[@class='panel panel-default'][1]" position="attributes">
+            <attribute name="class">panel panel-default hidden</attribute>
+        </xpath>
+        <xpath expr="//div[@class='panel panel-default'][2]" position="replace" />
+        <!-- REMOVING ORGANIZATION // CREATOR OF EVENT -->
+        <xpath expr="//div[@class='col-md-4 css_noprint']" position="attributes">
+            <attribute name="class">col-md-4 css_noprint hidden hidden</attribute>
+        </xpath>
+    </template>
+    <template id="registration_complete" inherit_id="website_event.registration_complete">
+        <!--
+             <template id="registration_complete" name="Registration Completed">
+             verify message
+        -->
+        <xpath expr="//div[@class='container']" position="replace">
+            <h3 class="text-center">
+                <br />
+                <br />
+                Tack för din anmälan! Vi återkommer till dig.
+            </h3>
+        </xpath>
+    </template>
+    <template id="registration_attendee_details" inherit_id="website_event.registration_attendee_details">
+        <!--
+             <h4 class="modal-title" id="myModalLabel"><strong>Attendees</strong></h4>
+        -->
+        <xpath expr="//h4[@class='modal-title']" position="replace">
+            <h4 data-oe-model="event.event" data-oe-id="1" data-oe-field="name" data-oe-type="char" data-oe-expression="event.name" itemprop="name" class="text-left">
+                <strong>Marielund Stiftsgården</strong>
+            </h4>
+        </xpath>
+        <xpath expr="//h4[@class='page-header mt16']" position="replace">
+            <h1 data-oe-model="event.event" data-oe-id="1" data-oe-field="name" data-oe-type="char" data-oe-expression="event.name" itemprop="name" class="text-left">Anmälan till program på Marielund</h1>
+            <p class="text-muted" style="text-align: left;">
+                Fyll i samtliga uppgifter.
+                <b>Viktigt!</b>
+                Om du skulle ha något särskilt behov som är betydelsefullt för din vistelse ber vi dig att förmedla det i god tid. Det kan till exempel gälla vegetarisk kost, en allergi av betydelse eller en svårighet att gå i trappor.
+            </p>
+            <p class="text-muted" style="text-align: left;">Välkommen med din anmälan!</p>
+        </xpath>
+        <!-- REGISTRATION FORM // FIRST ROW -->
+        <xpath expr="//div[@class='row']" position="attributes">
+			<!-- REMOVE / HIDE DEFAULT TITLES -->
+            <attribute name="class">row hidden</attribute>
+        </xpath>
+        <xpath expr="//input[@t-attf-name='#{counter}-name']" position="before">
+			<label t-attf-for="#{counter}-name">Namn</label>
+		</xpath>
+        <xpath expr="//input[@t-attf-name='#{counter}-email']" position="before">
+			<label t-attf-for="#{counter}-email">E-post</label>
+		</xpath>
+        <xpath expr="//input[@t-attf-name='#{counter}-phone']" position="before">
+			<label t-attf-for="#{counter}-phone">Telefon</label>
+		</xpath>
+        	
+        
+        <!-- REGISTRATION FORM // SECOND ROW -->
+        <xpath expr="//input[@t-attf-name='#{counter}-phone']/.." position="after">
+            <div class="col-md-12">
+				<!-- ADDING SOME SPACE... -->
+                <br />
+            </div>
+            <div class="col-md-6">
+				<!-- ADDRESS -->
+				<label t-attf-for="#{counter}-address">Address</label>
+                <textarea class="form-control" t-attf-name="#{counter}-address"></textarea>
+            </div>
+            <div class="col-md-6">
+				<!-- NOTE -->
+				<label t-attf-for="#{counter}-note">Note</label>
+                <textarea class="form-control" t-attf-name="#{counter}-note"></textarea>
+            </div>
+            <div class="col-md-12">
+				<!-- ADDING SOME SPACE... -->
+                <br />
+            </div>
+        </xpath>
+    </template>
+</odoo>
