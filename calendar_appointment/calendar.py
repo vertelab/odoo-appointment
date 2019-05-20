@@ -136,4 +136,3 @@ class Wizard(models.TransientModel):
 				# Nuvarande tiden för en spot att skapas på. 
 				# ~ spot_starttime = self.date_start + timedelta(hours=((spots_per_day_i) * self.duration), days=new_day)	
 				# ~ spot_endtime = spot_starttime + timedelta(hours=(self.duration))
-				
