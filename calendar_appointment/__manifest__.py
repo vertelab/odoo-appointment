@@ -30,9 +30,10 @@ Its a calendar.
     'author': 'Vertel AB',
     'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
-    'depends': ['calendar', 'mail', 'contacts'],
+    'depends': ['calendar', 'mail'],
     'data': [
 		'calendar.xml', 
+		'template.xml',
 		'security/ir.model.access.csv'
     ],
     'installable': True,

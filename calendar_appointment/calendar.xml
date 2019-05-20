@@ -50,13 +50,15 @@
   </record>
   <!--calendar form appointment view-->
   <record id="appointment_form_view" model="ir.ui.view">
-    <field name="name">create appointment</field>
+    <field name="name">Create appointment</field>
     <field name="model">calendar.appointment</field>
     <field name="arch" type="xml">
+<!--
       <header>
         <button name="send_invitation_template" string="Send invite" type="object" class="oe_highlight" />
       </header>
-      <form string="appointment form">
+-->
+      <form string="Appointment form">
         <sheet>
           <group>
             <group colspan="2" col="2">
@@ -165,7 +167,4 @@
   <menuitem id="calendar_menu" name="Appointment" action="appointment_menu_action" />
   <menuitem id="session_menu" name="Session" parent="calendar_menu" action="launch_session_wizard" />
   <menuitem id="calendar_spot_menu" parent="calendar_menu" name="Spot" action="spot_menu_action" />
-  <!--
-       <menuitem id="button_menu" name="send_email" parent="calendar_menu" action="spot_menu_button" />
-  -->
 </odoo>
