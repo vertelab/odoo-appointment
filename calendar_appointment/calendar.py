@@ -139,7 +139,7 @@ class Wizard(models.TransientModel):
                 # ~ spot_endtime = spot_starttime + timedelta(hours=(self.duration))
                 
 class MyController(http.Controller):
-    @http.route('/appointment/<int:appointment_id>', type="http", website=True, auth='public')
-    def handler(self, appointment_id=1, **kwargs):
-        handler = http.request.env['calendar.appointment.spots'].sudo().search([])
+    @http.route('/appointment/', type="http", website=True, auth='public')
+    def handler(self):
+        handler = http.request.env['calendar.appointment.spot'].sudo().search([])
         return http.request.render('calendar_appointment.appointment_booking', {'appointments':handler})

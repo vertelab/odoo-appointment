@@ -1,21 +1,22 @@
 <odoo>
   <template id="appointment_booking" name="Appointment booking">
-<!--
-    <t t-call="website.layout">
--->
-      <div class="oe_structure">
-        <div class="container">
-          <br />
-          <center>
-            <h3>Appointments</h3>
-          </center>
-          <br />
-               <t t-foreach="appointments" t-as="spots"/>
-               <h6><span t-esc="spots.appointment_id"/></h6>
-        </div>
+    <div class="oe_structure">
+      <div class="container">
+        <br />
+        <center>
+          <h3>Appointments</h3>
+        </center>
+        <br />
+        <t t-foreach="appointments" t-as="spots">
+          <h4>
+            <span t-esc="spots.appointment_id.name" />
+          </h4>
+        </t>
       </div>
-<!--
-    </t>
--->
+    </div>	
   </template>
 </odoo>
+
+
+<!-- Snippet: https://bootsnipp.com/snippets/X260v ???
+-->
