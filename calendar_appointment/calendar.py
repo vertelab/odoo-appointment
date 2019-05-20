@@ -3,6 +3,8 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, Warning
 import logging
 from datetime import timedelta, time
+import odoo.http as http
+from odoo.http import request
 
 
 _logger = logging.getLogger(__name__)
@@ -133,6 +135,15 @@ class Wizard(models.TransientModel):
 		
 		return action
 		
+		
 				# Nuvarande tiden för en spot att skapas på. 
 				# ~ spot_starttime = self.date_start + timedelta(hours=((spots_per_day_i) * self.duration), days=new_day)	
 				# ~ spot_endtime = spot_starttime + timedelta(hours=(self.duration))
+				
+class MyController(http.Controller):
+	# skapa en variabel innan /appointment, returnera en render, http get, post
+	# https://www.cybrosys.com/blog/web-controllers-in-odoo
+    @route('/appointment/<int:appointment_id>', type="http", website="true", auth='public')
+    def handler(self, appointment_id, **kwargs):
+		handler=request.env['calendar.appointment.spot'].sudo().search([])
+        return request.render('calendar_appointment', {'något':handler})

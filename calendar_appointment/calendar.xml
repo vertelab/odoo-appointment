@@ -3,12 +3,14 @@
     <field name="name">Invitation email</field>
     <field name="model_id" ref="model_calendar_appointment" />
     <field name="email_from">${object.user_id.email}</field>
-    <field name="subject">Sample text</field>
+    <field name="subject">Inbjudan till ${object.name}</field>
     <field name="partner_to">${",".join([str(a.id) for a in object.attendee_ids])}</field>
     <field name="lang" />
     <field name="body_html">
       <![CDATA[
-               <p>This is a mail</p>
+               <p>Hej! ${object.attendee_ids.name},
+               ${object.user_id.partner_id.name}, bjöd in dig till 
+               ${object.name}, ett möte av ${object.user_id.company_id.name}. </p>
       ]]>
     </field>
   </record>
