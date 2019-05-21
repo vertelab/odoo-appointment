@@ -50,6 +50,14 @@ class calendar_appointment_spot(models.Model):
     date_start = fields.Datetime(string = 'Date start')
     duration = fields.Float(string = 'Duration')
     date_end = fields.Datetime(string = 'Date End')
+    # ~ date_start_hh_mm = date_start.strftime("%h:%m")
+    # ~ date_end_hh_mm = date_end.strftime("%h:%m")
+    def date_end_hh_mm(self):
+        return self.date_end.strftime("%H:%M")
+        
+            
+    def date_start_hh_mm(self):
+        return self.date_start.strftime("%H:%M")
     
 class calendar_event(models.Model):
     
@@ -142,4 +150,10 @@ class MyController(http.Controller):
     @http.route('/appointment/', type="http", website=True, auth='public')
     def handler(self):
         handler = http.request.env['calendar.appointment.spot'].sudo().search([])
-        return http.request.render('calendar_appointment.appointment_booking', {'appointments':handler})
+        return http.request.render('calendar_appointment.appointment_booking', {'spots':handler})
+
+    @http.route('/appointment/<model("calendar.appointment.spot"):spot>', type="http", website=True, auth='public')
+    def spot(self, spot=None):
+        return http.request.render('calendar_appointment.appointment_spot_template', {'spot': spot})
+
+

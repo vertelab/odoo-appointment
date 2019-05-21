@@ -1,22 +1,150 @@
 <odoo>
-  <template id="appointment_booking" name="Appointment booking">
-    <div class="oe_structure">
-      <div class="container">
-        <br />
-        <center>
-          <h3>Appointments</h3>
-        </center>
-        <br />
-        <t t-foreach="appointments" t-as="spots">
-          <h4>
-            <span t-esc="spots.appointment_id.name" />
-          </h4>
-        </t>
+   <template id="appointment_booking" name="Appointment booking">
+      <t t-call="website.layout">
+         <t t-set="head">
+            <script>document.getElementsByTagName("html")[0].className += " js";</script>
+            <link rel="stylesheet" href="/calendar_appointment/static/src/css/style.css" />
+         </t>
+         <header class="cd-main-header text--center flex flex--column flex--center">
+            <h1 class="text--xl">Schedule Template</h1>
+         </header>
+         <div class="cd-schedule cd-schedule--loading margin-top--lg margin-bottom--lg js-cd-schedule">
+            <div class="cd-schedule__timeline">
+               <ul>
+                  <li>
+                     <span>09:00</span>
+                  </li>
+                  <li>
+                     <span>09:30</span>
+                  </li>
+                  <li>
+                     <span>10:00</span>
+                  </li>
+                  <li>
+                     <span>10:30</span>
+                  </li>
+                  <li>
+                     <span>11:00</span>
+                  </li>
+                  <li>
+                     <span>11:30</span>
+                  </li>
+                  <li>
+                     <span>12:00</span>
+                  </li>
+                  <li>
+                     <span>12:30</span>
+                  </li>
+                  <li>
+                     <span>13:00</span>
+                  </li>
+                  <li>
+                     <span>13:30</span>
+                  </li>
+                  <li>
+                     <span>14:00</span>
+                  </li>
+                  <li>
+                     <span>14:30</span>
+                  </li>
+                  <li>
+                     <span>15:00</span>
+                  </li>
+                  <li>
+                     <span>15:30</span>
+                  </li>
+                  <li>
+                     <span>16:00</span>
+                  </li>
+                  <li>
+                     <span>16:30</span>
+                  </li>
+                  <li>
+                     <span>17:00</span>
+                  </li>
+                  <li>
+                     <span>17:30</span>
+                  </li>
+                  <li>
+                     <span>18:00</span>
+                  </li>
+               </ul>
+            </div>
+            <!-- .cd-schedule__timeline -->
+            <div class="cd-schedule__events">
+               <ul>
+                  <li class="cd-schedule__group">
+                     <div class="cd-schedule__top-info">
+                        <span>Monday</span>
+                     </div>
+                     <ul>
+                        <t t-foreach="spots" t-as="spot">
+                           <li class="cd-schedule__event">
+                              <a t-att-data-start="spot.date_start_hh_mm()" t-att-data-end="spot.date_end_hh_mm()" t-att-data-content="spot.id" data-event="event-4" href="#0" />
+                           </li>
+                        </t>
+                     </ul>
+                  </li>
+                  <li class="cd-schedule__group">
+                     <div class="cd-schedule__top-info">
+                        <span>Tuesday</span>
+                     </div>
+                  </li>
+                  <li class="cd-schedule__group">
+                     <div class="cd-schedule__top-info">
+                        <span>Wednesday</span>
+                     </div>
+                     <ul>
+                        <li class="cd-schedule__event">
+                           <a data-start="09:00" data-end="10:30" data-content="134985" data-event="event-4" href="#0" />
+                        </li>
+                        <li class="cd-schedule__event">
+                           <a data-start="10:45" data-end="11:45" data-content="event-yoga-1" data-event="event-4" href="#0" />
+                        </li>
+                        <li class="cd-schedule__event">
+                           <a data-start="12:00" data-end="13:45" data-content="event-rowing-workout" data-event="event-4" href="#0" />
+                        </li>
+                        <li class="cd-schedule__event">
+                           <a data-start="13:45" data-end="15:00" data-content="event-yoga-1" data-event="event-4" href="#0" />
+                        </li>
+                     </ul>
+                  </li>
+                  <li class="cd-schedule__group">
+                     <div class="cd-schedule__top-info">
+                        <span>Thursday</span>
+                     </div>
+                  </li>
+                  <li class="cd-schedule__group">
+                     <div class="cd-schedule__top-info">
+                        <span>Friday</span>
+                     </div>
+                  </li>
+               </ul>
+            </div>
+            <div class="cd-schedule-modal">
+               <header class="cd-schedule-modal__header">
+                  <div class="cd-schedule-modal__content">
+                     <span class="cd-schedule-modal__date" />
+                     <h3 class="cd-schedule-modal__name" />
+                  </div>
+                  <div class="cd-schedule-modal__header-bg" />
+               </header>
+               <div class="cd-schedule-modal__body">
+                  <div class="cd-schedule-modal__event-info" />
+                  <div class="cd-schedule-modal__body-bg" />
+               </div>
+               <a href="#0" class="cd-schedule-modal__close text--replace">Close</a>
+            </div>
+            <div class="cd-schedule__cover-layer" />
+         </div>
+         <!-- .cd-schedule -->
+         <script src="/calendar_appointment/static/src/js/util.js" />
+         <script src="/calendar_appointment/static/src/js/main.js" />
+      </t>
+   </template>
+   <template id="appointment_spot_template">
+      <div class="cd-schedule-modal__event-info">
+         <t t-esc="spot.date_start_hh_mm" />
       </div>
-    </div>	
-  </template>
+   </template>
 </odoo>
-
-
-<!-- Snippet: https://bootsnipp.com/snippets/X260v ???
--->
