@@ -25,6 +25,7 @@ class calendar_appointment(models.Model):
     meeting_type = fields.Selection([('One2one', 'One to One'),('Many2one', 'Many to One'),], 'Type Selections') # Ena värdet visa i dropdown och andra lagras i DB:n
     date_due = fields.Date(string = 'Dates')
     attendee_ids_str = fields.Char(compute='compute_attendee_ids_str')
+    # Token = fields.Cha1
 
     def compute_attendee_ids_str(self):
         self.attendee_ids_str = ','.join([str(a.id) for a in self.attendee_ids])
@@ -53,11 +54,11 @@ class calendar_appointment_spot(models.Model):
     # ~ date_start_hh_mm = date_start.strftime("%h:%m")
     # ~ date_end_hh_mm = date_end.strftime("%h:%m")
     
-    def date_end_hh_mm(self):
-        return self.date_end.strftime("%H:%M")
+    def date_end_template_format(self):
+        return self.date_end.strftime("%Y-%m-%dT%H:%M:%S")
         
-    def date_start_hh_mm(self):
-        return self.date_start.strftime("%H:%M")
+    def date_start_template_format(self):
+        return self.date_start.strftime("%Y-%m-%dT%H:%M:%S")
         
     def get_weekday(self):
         return self.date_start.weekday()
@@ -159,7 +160,6 @@ class MyController(http.Controller):
     def spot(self, spot=None):
         return http.request.render('calendar_appointment.appointment_spot_template', {'spot': spot})
 
-    @http.route(['/appointment/json_test'], type='json', auth="public")
-    def json_test(self):
-        return [1, 2, 5, {'a': 2}]
-
+    # ~ @http.route(['/appointment/json_test'], type='json', auth="public")
+    # ~ def json_test(self):
+        # ~ return [1, 2, 5, {'a': 2}]
