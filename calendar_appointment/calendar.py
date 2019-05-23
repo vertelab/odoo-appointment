@@ -52,12 +52,15 @@ class calendar_appointment_spot(models.Model):
     date_end = fields.Datetime(string = 'Date End')
     # ~ date_start_hh_mm = date_start.strftime("%h:%m")
     # ~ date_end_hh_mm = date_end.strftime("%h:%m")
+    
     def date_end_hh_mm(self):
         return self.date_end.strftime("%H:%M")
         
-            
     def date_start_hh_mm(self):
         return self.date_start.strftime("%H:%M")
+        
+    def get_weekday(self):
+        return self.date_start.weekday()
     
 class calendar_event(models.Model):
     
@@ -156,4 +159,7 @@ class MyController(http.Controller):
     def spot(self, spot=None):
         return http.request.render('calendar_appointment.appointment_spot_template', {'spot': spot})
 
+    @http.route(['/appointment/json_test'], type='json', auth="public")
+    def json_test(self):
+        return [1, 2, 5, {'a': 2}]
 
