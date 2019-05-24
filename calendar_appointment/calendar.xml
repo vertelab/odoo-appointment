@@ -8,9 +8,11 @@
     <field name="lang" />
     <field name="body_html">
       <![CDATA[
-               <p>Hej! </p>
-               <a href="http://localhost:8069/appointment/9/49e8f0fcfc2dc399a536b1144a0493f02480fc52">Länk</a>
-               <a href="https://www.google.com">Google</a>
+               <p>Hej! ${object.attendee_ids[0].name}</p>
+               <p>Du är inbjuden till mötet: ${object.name}! </p>
+               <p>Tryck på länken nedan för att välja lämplig tid:</p>
+
+               <a href="http://localhost:8069/appointment/$%7Bobject.id%7D/$%7Bobject.token%7D%22%3ELänk</a>
       ]]>
     </field>
   </record>
