@@ -5,7 +5,7 @@ import logging
 from datetime import timedelta, time
 import odoo.http as http
 from odoo.http import request
-
+import hashlib
 
 _logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class calendar_appointment(models.Model):
     meeting_type = fields.Selection([('One2one', 'One to One'),('Many2one', 'Many to One'),], 'Type Selections') # Ena värdet visa i dropdown och andra lagras i DB:n
     date_due = fields.Date(string = 'Dates')
     attendee_ids_str = fields.Char(compute='compute_attendee_ids_str')
-    token = fields.Char()
+    token = fields.Char() # anropar metoden när ett nytt recordset skapas
 
     def compute_attendee_ids_str(self):
         self.attendee_ids_str = ','.join([str(a.id) for a in self.attendee_ids])
@@ -35,8 +35,10 @@ class calendar_appointment(models.Model):
         template = self.env.ref('calendar_appointment.invitation_model')
         template.send_mail(self.id)
     
+    @api.onchange('token')
     def _create_token(self):
-        pass
+        self.token = hashlib.sha1(bytes(str(self.id), 'utf-8')).hexdigest()
+    # onchange, default
         
         
         
@@ -154,11 +156,17 @@ class Wizard(models.TransientModel):
                 # ~ spot_endtime = spot_starttime + timedelta(hours=(self.duration))
                 
 class MyController(http.Controller):
-    @http.route('/appointment/', type="http", website=True, auth='public')
-    def handler(self):
-        handler = http.request.env['calendar.appointment.spot'].sudo().search([])
+    @http.route('/appointment/<int:appointment_id>/<string:token>', type="http", website=True, auth='public')
+    def handler(self, appointment_id, token):
+        handler = http.request.env['calendar.appointment.spot'].sudo().search([('appointment_id', '=', appointment_id)])
+        
+        token_check = http.request.env['calendar.appointment'].sudo().search([('token', '=', token),('id', '=', appointment_id)])
+        
+        if not token_check:
+            return request.not_found()
+        
         return http.request.render('calendar_appointment.appointment_booking', {'spots':handler})
-
+        
     @http.route('/appointment/<model("calendar.appointment.spot"):spot>', type="http", website=True, auth='public')
     def spot(self, spot=None):
         return http.request.render('calendar_appointment.appointment_spot_template', {'spot': spot})
