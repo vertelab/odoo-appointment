@@ -1,170 +1,169 @@
 <odoo>
-   <record model="mail.template" id="invitation_model">
-      <field name="name">Invitation email</field>
-      <field name="model_id" ref="model_calendar_appointment" />
-      <field name="email_from">${object.user_id.email}</field>
-      <field name="subject">Inbjudan till ${object.name}</field>
-      <field name="partner_to">${",".join([str(a.id) for a in object.attendee_ids])}</field>
-      <field name="lang" />
-      <field name="body_html">
-         <![CDATA[
-                  <p>Hej! ${object.attendee_ids[0].name},
-                  ${object.user_id.partner_id.name}, bjöd in dig till 
-                  ${object.name}, ett möte av ${object.user_id.company_id.name}. </p>
-         ]]>
+  <record model="mail.template" id="invitation_model">
+    <field name="name">Invitation email</field>
+    <field name="model_id" ref="model_calendar_appointment" />
+    <field name="email_from">${object.user_id.email}</field>
+    <field name="subject">Inbjudan till ${object.name}</field>
+    <field name="partner_to">${",".join([str(a.id) for a in object.attendee_ids])}</field>
+    <field name="lang" />
+    <field name="body_html">
+      <![CDATA[
+               <p>Hej! </p>
+               <a href="http://localhost:8069/appointment/9/49e8f0fcfc2dc399a536b1144a0493f02480fc52">Länk</a>
+               <a href="https://www.google.com">Google</a>
+      ]]>
+    </field>
+  </record>
+  <record id="view_calendar_event_form" model="ir.ui.view">
+    <field name="name">Calendar event</field>
+    <field name="model">calendar.event</field>
+    <field name="inherit_id" ref="calendar.view_calendar_event_form" />
+    <field name="arch" type="xml">
+      <field name="user_id" position="after">
+        <field name="appointment_id" />
       </field>
-   </record>
-   <record id="view_calendar_event_form" model="ir.ui.view">
-      <field name="name">Calendar event</field>
-      <field name="model">calendar.event</field>
-      <field name="inherit_id" ref="calendar.view_calendar_event_form" />
-      <field name="arch" type="xml">
-         <field name="user_id" position="after">
-            <field name="appointment_id" />
-         </field>
-      </field>
-   </record>
-   <!--calendar spot calendar view-->
-   <record id="spot_calendar_view" model="ir.ui.view">
-      <field name="name">calendar.appointment.spot</field>
-      <field name="model">calendar.appointment.spot</field>
-      <field name="arch" type="xml">
-         <calendar date_start="date_start" date_delay="duration" string="Spots">
-            <field name="name" />
-         </calendar>
-      </field>
-   </record>
-   <!--calendar tree appointment view-->
-   <record id="appointment_tree_view" model="ir.ui.view">
-      <field name="name">Calendar appointment</field>
-      <field name="model">calendar.appointment</field>
-      <field name="arch" type="xml">
-         <tree string="tree appointment">
-            <field name="name" />
-            <field name="attendee_ids" />
-            <field name="date_due" />
-            <field name="meeting_type" />
-            <field name="user_id" />
-         </tree>
-      </field>
-   </record>
-   <!--calendar form appointment view-->
-   <record id="appointment_form_view" model="ir.ui.view">
-      <field name="name">Create appointment</field>
-      <field name="model">calendar.appointment</field>
-      <field name="arch" type="xml">
-         <!--
-              <header>
-              <button name="send_invitation_template" string="Send invite" type="object" class="oe_highlight" />
-              </header>
-         -->
-         <form string="Appointment form">
-            <sheet>
-               <group>
-                  <group colspan="2" col="2">
-                     <field name="name" />
-                     <field name="attendee_ids" />
-                     <field name="spot_ids" />
-                     <field name="is_published" />
-                     <field name="meeting_type" />
-                     <field name="date_due" />
-                  </group>
-                  <group>
-                     <field name="user_id" />
-                  </group>
-               </group>
-            </sheet>
-         </form>
-      </field>
-   </record>
-   <!--calendar tree spot views-->
-   <record id="spot_tree_view" model="ir.ui.view">
-      <field name="name">Calendar spot</field>
-      <field name="model">calendar.appointment.spot</field>
-      <field name="arch" type="xml">
-         <tree string="tree spot">
-            <field name="name" />
-            <field name="appointment_id" />
-            <field name="date_start" />
-            <field name="partner_ids" string="Attendees" />
-            <field name="duration" />
-         </tree>
-      </field>
-   </record>
-   <!--Calendar form spot views-->
-   <record id="spot_form_view" model="ir.ui.view">
-      <field name="name">Create spot</field>
-      <field name="model">calendar.appointment.spot</field>
-      <field name="arch" type="xml">
-         <form string="spot form">
-            <sheet>
-               <group>
-                  <group string="Information">
-                     <separator />
-                     <field name="name" />
-                     <field name="appointment_id" />
-                     <field name="calendar_id" />
-                     <field name="note" />
-                  </group>
-                  <group string="Date">
-                     <separator />
-                     <field name="date_start" />
-                     <field name="duration" string="Duration in hours" />
-                  </group>
-               </group>
-               <group>
-                  <field name="partner_ids" />
-               </group>
-            </sheet>
-         </form>
-      </field>
-   </record>
-   <!--/-->
-   <record id="appointment_menu_action" model="ir.actions.act_window">
-      <field name="name">Calendar Appointment</field>
-      <field name="res_model">calendar.appointment</field>
-      <field name="view_type">form</field>
-      <field name="view_mode">tree,form</field>
-      <field name="domain">[]</field>
-      <field name="help" type="html">
-         <p class="oe_view_nocontent_create">Create the first appointment</p>
-      </field>
-   </record>
-   <!--/-->
-   <record id="spot_menu_action" model="ir.actions.act_window">
-      <field name="name">Calendar Spot</field>
-      <field name="res_model">calendar.appointment.spot</field>
-      <field name="view_type">form</field>
-      <field name="view_mode">calendar,tree,form</field>
-      <field name="domain">[]</field>
-      <field name="help" type="html">
-         <p class="oe_view_nocontent_create">Create the first spot</p>
-      </field>
-   </record>
-   <!--Wizard-->
-   <record model="ir.ui.view" id="wizard_form_view">
-      <field name="name">wizard.form</field>
-      <field name="model">calendar.appointment.wizard</field>
-      <field name="arch" type="xml">
-         <form string="Add Attendees">
-            <group>
-               <field name="date_start" string="Starting date and time" />
-               <field name="date_stop" string="Ending date and time" />
-               <field name="duration" string="Spot duration" />
-               <field name="nmbr_spots" string="Number of spots" />
-               <field name="nmbr_spots_per_day" string="Number of spots per day" />
+    </field>
+  </record>
+  <!--calendar spot calendar view-->
+  <record id="spot_calendar_view" model="ir.ui.view">
+    <field name="name">calendar.appointment.spot</field>
+    <field name="model">calendar.appointment.spot</field>
+    <field name="arch" type="xml">
+      <calendar date_start="date_start" date_delay="duration" string="Spots">
+        <field name="name" />
+      </calendar>
+    </field>
+  </record>
+  <!--calendar tree appointment view-->
+  <record id="appointment_tree_view" model="ir.ui.view">
+    <field name="name">Calendar appointment</field>
+    <field name="model">calendar.appointment</field>
+    <field name="arch" type="xml">
+      <tree string="tree appointment">
+        <field name="name" />
+        <field name="attendee_ids" />
+        <field name="date_due" />
+        <field name="meeting_type" />
+        <field name="user_id" />
+      </tree>
+    </field>
+  </record>
+  <!--calendar form appointment view-->
+  <record id="appointment_form_view" model="ir.ui.view">
+    <field name="name">Create appointment</field>
+    <field name="model">calendar.appointment</field>
+    <field name="arch" type="xml">
+      <group>
+        <header>
+          <button name="send_invitation_template" string="Send invite" type="object" class="oe_highlight" />
+        </header>
+      </group>
+      <form string="Appointment form">
+        <sheet>
+          <group>
+            <group colspan="2" col="2">
+              <field name="name" />
+              <field name="attendee_ids" />
+              <field name="spot_ids" />
+              <field name="is_published" />
+              <field name="meeting_type" />
+              <field name="date_due" />
             </group>
-            <footer>
-               <button type="object" name="create_spots" string="Create" class="btn-success" />
-               <button type="object" name="test_function" string="Test" class="btn-primary" />
-               <button special="cancel" string="Discard" class="btn-danger" />
-            </footer>
-         </form>
-      </field>
-   </record>
-   <act_window id="launch_session_wizard" name="Add Spots" src_model="calendar.appointment" res_model="calendar.appointment.wizard" view_mode="form" target="new" key2="client_action_multi" />
-   <!--/-->
-   <menuitem id="calendar_menu" name="Appointment" action="appointment_menu_action" />
-   <menuitem id="session_menu" name="Session" parent="calendar_menu" action="launch_session_wizard" />
-   <menuitem id="calendar_spot_menu" parent="calendar_menu" name="Spot" action="spot_menu_action" />
+            <group>
+              <field name="user_id" />
+            </group>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+  <!--calendar tree spot views-->
+  <record id="spot_tree_view" model="ir.ui.view">
+    <field name="name">Calendar spot</field>
+    <field name="model">calendar.appointment.spot</field>
+    <field name="arch" type="xml">
+      <tree string="tree spot">
+        <field name="name" />
+        <field name="appointment_id" />
+        <field name="date_start" />
+        <field name="partner_ids" string="Attendees" />
+        <field name="duration" />
+      </tree>
+    </field>
+  </record>
+  <!--Calendar form spot views-->
+  <record id="spot_form_view" model="ir.ui.view">
+    <field name="name">Create spot</field>
+    <field name="model">calendar.appointment.spot</field>
+    <field name="arch" type="xml">
+      <form string="spot form">
+        <sheet>
+          <group>
+            <group string="Information">
+              <separator />
+              <field name="name" />
+              <field name="appointment_id" />
+              <field name="calendar_id" />
+              <field name="note" />
+            </group>
+            <group string="Date">
+              <separator />
+              <field name="date_start" />
+              <field name="duration" string="Duration in hours" />
+            </group>
+          </group>
+          <group>
+            <field name="partner_ids" />
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+  <!--/-->
+  <record id="appointment_menu_action" model="ir.actions.act_window">
+    <field name="name">Calendar Appointment</field>
+    <field name="res_model">calendar.appointment</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[]</field>
+    <field name="help" type="html">
+      <p class="oe_view_nocontent_create">Create the first appointment</p>
+    </field>
+  </record>
+  <!--/-->
+  <record id="spot_menu_action" model="ir.actions.act_window">
+    <field name="name">Calendar Spot</field>
+    <field name="res_model">calendar.appointment.spot</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">calendar,tree,form</field>
+    <field name="domain">[]</field>
+    <field name="help" type="html">
+      <p class="oe_view_nocontent_create">Create the first spot</p>
+    </field>
+  </record>
+  <!--Wizard-->
+  <record model="ir.ui.view" id="wizard_form_view">
+    <field name="name">wizard.form</field>
+    <field name="model">calendar.appointment.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Add Attendees">
+        <group>
+          <field name="date_start" string="Starting date and time" />
+          <field name="date_stop" string="Ending date and time" />
+          <field name="duration" string="Spot duration" />
+          <field name="nmbr_spots" string="Number of spots" />
+          <field name="nmbr_spots_per_day" string="Number of spots per day" />
+        </group>
+        <footer>
+          <button type="object" name="create_spots" string="Create" class="btn-success" />
+          <button type="object" name="test_function" string="Test" class="btn-primary" />
+          <button special="cancel" string="Discard" class="btn-danger" />
+        </footer>
+      </form>
+    </field>
+  </record>
+  <act_window id="launch_session_wizard" name="Add Spots" src_model="calendar.appointment" res_model="calendar.appointment.wizard" view_mode="form" target="new" key2="client_action_multi" />
+  <!--/-->
+  <menuitem id="calendar_menu" name="Appointment" action="appointment_menu_action" />
+  <menuitem id="calendar_spot_menu" parent="calendar_menu" name="Spot" action="spot_menu_action" />
 </odoo>

@@ -130,7 +130,7 @@
         <div class="modal-content">
           <span class="close">&#215;</span>
           <p>Vill du bekräfta din bokning?</p>
-          <form id="modalForm" action="POST">
+          <form id="modalForm" action="" method="POST">
             <input type="hidden" name="spot_id" />
           </form>
           <button id="button" type="button" onclick="document.getElementById('modalForm').submit()" class="btn btn-success">Ja</button>

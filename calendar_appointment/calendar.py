@@ -169,7 +169,8 @@ class MyController(http.Controller):
         
     @http.route('/appointment/<model("calendar.appointment.spot"):spot>', type="http", website=True, auth='public')
     def spot(self, spot=None):
-        return http.request.render('calendar_appointment.appointment_spot_template', {'spot': spot})
+        return http.request.render('calendar_appointment.confirmed_booking', {'spot': spot})
+        
 
     # ~ @http.route(['/appointment/json_test'], type='json', auth="public")
     # ~ def json_test(self):
