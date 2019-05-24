@@ -22,7 +22,6 @@
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
           },
-          defaultDate: '2019-04-12',
           navLinks: true, // can click day/week names to navigate views
           
           weekNumbers: true,
@@ -33,10 +32,16 @@
           eventLimit: true, // allow "more" link when too many events
           
           eventClick: function(info) {
+          console.log(info);
+          
+          
+          
           var modal = document.getElementById("myModal");
           var span = document.getElementsByClassName("close")[0];
+          var spotid = document.getElementsByName("spot_id")[0];
           
           modal.style.display = "block";
+          spotid.value = info.event.id;
           
           span.onclick = function(info) {
           modal.style.display = "none";
@@ -53,6 +58,8 @@
           <t t-foreach="spots" t-as="spot">
             {
             title: 'Möte',
+            id:
+            <t t-esc="''''%s','''%spot.id" />
             start:
             <t t-esc="''''%s','''%spot.date_start_template_format()" />
             end: '2019-04-13'
@@ -123,8 +130,11 @@
         <div class="modal-content">
           <span class="close">&#215;</span>
           <p>Vill du bekräfta din bokning?</p>
-          <button id="button" type="button" class="btn btn-success">Ja</button>
-          <button id="button" type="button" class="btn btn-danger">Nej</button>
+          <form id="modalForm" action="POST">
+            <input type="hidden" name="spot_id" />
+          </form>
+          <button id="button" type="button" onclick="document.getElementById('modalForm').submit()" class="btn btn-success">Ja</button>
+          <button id="button" type="button" class="btn btn-danger" onclick="document.getElementById('myModal').style.display = null">Nej</button>
         </div>
       </div>
     </t>
