@@ -25,7 +25,7 @@ class calendar_appointment(models.Model):
     meeting_type = fields.Selection([('One2one', 'One to One'),('Many2one', 'Many to One'),], 'Type Selections') # Ena värdet visa i dropdown och andra lagras i DB:n
     date_due = fields.Date(string = 'Dates')
     attendee_ids_str = fields.Char(compute='compute_attendee_ids_str')
-    # Token = fields.Cha1
+    token = fields.Char()
 
     def compute_attendee_ids_str(self):
         self.attendee_ids_str = ','.join([str(a.id) for a in self.attendee_ids])
@@ -34,6 +34,9 @@ class calendar_appointment(models.Model):
     def send_invitation_template(self):
         template = self.env.ref('calendar_appointment.invitation_model')
         template.send_mail(self.id)
+    
+    def _create_token(self):
+        pass
         
         
         
