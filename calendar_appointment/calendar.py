@@ -167,8 +167,17 @@ class MyController(http.Controller):
         
         return http.request.render('calendar_appointment.appointment_booking', {'spots':handler})
         
-    @http.route('/appointment/<model("calendar.appointment.spot"):spot>', type="http", website=True, auth='public')
-    def spot(self, spot=None):
+    @http.route('/appointment/spot/<string:token>', type="http", website=True, auth='public')
+    def spot(self, **post):
+        post.get("spot_id")
+        
+        spot = http.request.env['calendar.appointment.spot'].sudo().browse(int(post.get("spot_id")))
+                
+        token_check = http.request.env['calendar.appointment'].sudo().search([('token', '=', token),('id', '=', spot.appointment_id.id)])
+        
+        if not token_check:
+            return request.not_found()
+        
         return http.request.render('calendar_appointment.confirmed_booking', {'spot': spot})
         
 
