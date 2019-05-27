@@ -140,8 +140,8 @@ class Wizard(models.TransientModel):
                 'duration' : self.duration}).id)
                 spots_created += 1
              
-             if current_stopdate > date_stop:
-                 break
+            if current_stopdate > date_stop:
+                break
             
             current_startdate += timedelta(hours=self.duration)
             
@@ -165,18 +165,15 @@ class MyController(http.Controller):
         if not token_check:
             return request.not_found()
         
-        return http.request.render('calendar_appointment.appointment_booking', {'spots':handler})
+        return http.request.render('calendar_appointment.appointment_booking', {'spots':handler, 'appointment' : token_check})
         
-    @http.route('/appointment/spot/<string:token>', type="http", website=True, auth='public')
+    @http.route('/appointment/spot', type="http", website=True, auth='public')
     def spot(self, **post):
         post.get("spot_id")
+        post.get("token")
         
         spot = http.request.env['calendar.appointment.spot'].sudo().browse(int(post.get("spot_id")))
                 
-        token_check = http.request.env['calendar.appointment'].sudo().search([('token', '=', token),('id', '=', spot.appointment_id.id)])
-        
-        if not token_check:
-            return request.not_found()
         
         return http.request.render('calendar_appointment.confirmed_booking', {'spot': spot})
         
