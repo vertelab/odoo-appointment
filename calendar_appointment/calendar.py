@@ -106,7 +106,6 @@ class Wizard(models.TransientModel):
     def create_spots(self):
         spots_created = 0
         appointment = self._default_appointment()
-        # ~ event_list = self.env['calendar.event'].search([('start_date','>=',self.date_start), ('stop_date', '<=',self.date_stop), ('user_id', '=', appointment.user_id.id)])
         spot_ids = []
         divider = 1
         current_startdate = self.date_start
@@ -115,19 +114,22 @@ class Wizard(models.TransientModel):
                 raise Warning(_('Appointment or user missing, please choose an appointment and user'))
                 
         days_counter = 0
-        i = 0
         while spots_created < self.nmbr_spots:
             if self.nmbr_spots_per_day == spots_created/divider:
                 days_counter += 1 
                 current_startdate = self.date_start + timedelta(days = days_counter)
                 divider += 1
-                
+            
+            current_stopdate = current_startdate + timedelta(hours=self.duration)
+            
             colliding_spots = self.env['calendar.event'].search([
-                ('start_datetime', '>=', current_startdate),
-                ('stop_datetime', '<=', current_startdate),
-                "&",
-                ('start_datetime', '<=', self.date_stop),
-                ('stop_datetime', '>=', self.date_stop)])
+            "&",
+                ('start_datetime', '<=', current_startdate),
+                ('stop_datetime', '>=', current_startdate),
+            "|",
+                ('start_datetime', '<=', current_stopdate),
+                ('stop_datetime', '>=', current_stopdate)])
+            # ~ raise Warning("Colliding spots: %s Current startdate: %s Current stopdate: %s"% (colliding_spots, current_startdate, current_stopdate))
                 
                 
             if not colliding_spots:
@@ -136,11 +138,13 @@ class Wizard(models.TransientModel):
                 'date_end' : current_startdate + timedelta(hours=self.duration),
                 'appointment_id' : self._context.get('active_id'),
                 'duration' : self.duration}).id)
-                i += 1
+                spots_created += 1
+             
+             if current_stopdate > date_stop:
+                 break
             
             current_startdate += timedelta(hours=self.duration)
             
-            spots_created += 1
                 
             
         action = self.env['ir.actions.act_window'].for_xml_id('calendar_appointment', 'spot_menu_action')
@@ -150,10 +154,6 @@ class Wizard(models.TransientModel):
         
         return action
         
-        
-                # Nuvarande tiden för en spot att skapas på. 
-                # ~ spot_starttime = self.date_start + timedelta(hours=((spots_per_day_i) * self.duration), days=new_day)   
-                # ~ spot_endtime = spot_starttime + timedelta(hours=(self.duration))
                 
 class MyController(http.Controller):
     @http.route('/appointment/<int:appointment_id>/<string:token>', type="http", website=True, auth='public')
