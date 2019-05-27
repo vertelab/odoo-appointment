@@ -56,14 +56,16 @@
           
           events: [
           <t t-foreach="spots" t-as="spot">
-            {
-            title: 'Möte',
-            id:
-            <t t-esc="''''%s','''%spot.id" />
-            start:
-            <t t-esc="''''%s','''%spot.date_start_template_format()" />
-            end: '2019-04-13'
-            },
+			  <t t-if="spot.event_id != null">
+				{
+				title: 'Möte',
+				id:
+				<t t-esc="''''%s','''%spot.id" />
+				start:
+				<t t-esc="''''%s','''%spot.date_start_template_format()" />
+				end: '2019-04-13'
+				},
+			  </t>
           </t>
           ]
           });
@@ -142,6 +144,9 @@
     </t>
   </template>
   <template id="confirmed_booking">
-    <p>Hej</p>
+	  <p>Booking confirmation</p>
+    <p>Start date: <t t-esc="spot.date_start" /></p>
+    <p>End date: <t t-esc="spot.date_start" /></p>
+    <p>Appointment: <t t-esc="spot.name" /></p>
   </template>
 </odoo>

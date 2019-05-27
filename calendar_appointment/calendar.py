@@ -1,4 +1,4 @@
-import odoo
+import odoo 
 from odoo import api, fields, models, _, http
 from odoo.exceptions import UserError, Warning
 import logging
@@ -51,7 +51,7 @@ class calendar_appointment_spot(models.Model):
     name = fields.Char(string='Name')
     appointment_id = fields.Many2one(comodel_name='calendar.appointment')
     partner_ids = fields.Many2many(comodel_name='res.partner')
-    calendar_id = fields.Many2one(comodel_name='calendar.event')
+    event_id = fields.Many2one(comodel_name='calendar.event')
     note = fields.Text(string='Note field')
     date_start = fields.Datetime(string = 'Date start')
     duration = fields.Float(string = 'Duration')
@@ -60,10 +60,10 @@ class calendar_appointment_spot(models.Model):
     # ~ date_end_hh_mm = date_end.strftime("%h:%m")
     
     def date_end_template_format(self):
-        return self.date_end.strftime("%Y-%m-%dT%H:%M:%S")
+        return self.date_end.strftime("%Y-%m-%dT%H:%M:%S+00:00")
         
     def date_start_template_format(self):
-        return self.date_start.strftime("%Y-%m-%dT%H:%M:%S")
+        return self.date_start.strftime("%Y-%m-%dT%H:%M:%S+00:00")
         
     def get_weekday(self):
         return self.date_start.weekday()
@@ -173,7 +173,9 @@ class MyController(http.Controller):
         post.get("token")
         
         spot = http.request.env['calendar.appointment.spot'].sudo().browse(int(post.get("spot_id")))
-                
+        event = http.request.env['calendar.event'].sudo().create({'start' : spot.date_start, 'stop' : spot.date_end, 'name' : spot.name})
+        
+        spot.event_id = event.id
         
         return http.request.render('calendar_appointment.confirmed_booking', {'spot': spot})
         

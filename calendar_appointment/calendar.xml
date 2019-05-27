@@ -11,7 +11,7 @@
                <p>Hej! ${object.attendee_ids[0].name}</p>
                <p>Du är inbjuden till mötet: ${object.name}! </p>
                <p>Tryck på länken nedan för att välja lämplig tid:</p>
-
+               
                <a href="http://localhost:8069/appointment/$%7Bobject.id%7D/$%7Bobject.token%7D%22%3ELänk</a>
       ]]>
     </field>
@@ -105,7 +105,7 @@
               <separator />
               <field name="name" />
               <field name="appointment_id" />
-              <field name="calendar_id" />
+              <field name="event_id" />
               <field name="note" />
             </group>
             <group string="Date">
