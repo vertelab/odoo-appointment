@@ -37,10 +37,15 @@ class calendar_appointment(models.Model):
     
     @api.onchange('token')
     def _create_token(self):
-        self.token = hashlib.sha1(bytes(str(self.id), 'utf-8')).hexdigest()
+        for attendee in attendee_ids:
+            self.token = hashlib.sha1(bytes(str(attendee.id), 'utf-8')).hexdigest()
     # onchange, default
         
-        
+class calendar_appointment_token(models.Model):
+    _name = 'calendar.appointment.token'
+    
+    token = field.Char()
+    appointment_id = fields.Many2one(comodel_name  = 'calendar.appointment')  
         
 class calendar_appointment_spot(models.Model):
 
@@ -58,6 +63,10 @@ class calendar_appointment_spot(models.Model):
     date_end = fields.Datetime(string = 'Date End')
     # ~ date_start_hh_mm = date_start.strftime("%h:%m")
     # ~ date_end_hh_mm = date_end.strftime("%h:%m")
+    
+    def get_partner_from_token(self, token):
+        return self.env.ref('base.partner_demo')
+        
     
     def date_end_template_format(self):
         return self.date_end.strftime("%Y-%m-%dT%H:%M:%S+00:00")
@@ -140,7 +149,7 @@ class Wizard(models.TransientModel):
                 'duration' : self.duration}).id)
                 spots_created += 1
              
-            if current_stopdate > date_stop:
+            if current_stopdate > self.date_stop:
                 break
             
             current_startdate += timedelta(hours=self.duration)
@@ -170,10 +179,18 @@ class MyController(http.Controller):
     @http.route('/appointment/spot', type="http", website=True, auth='public')
     def spot(self, **post):
         post.get("spot_id")
-        post.get("token")
+        token = post.get("token")
         
+       
         spot = http.request.env['calendar.appointment.spot'].sudo().browse(int(post.get("spot_id")))
-        event = http.request.env['calendar.event'].sudo().create({'start' : spot.date_start, 'stop' : spot.date_end, 'name' : spot.name})
+        appointment = http.request.env['calendar.appointment'].search([('id', '=', spot.appointment_id.id)])
+        
+        
+        event = http.request.env['calendar.event'].sudo().create({'start' : spot.date_start, 
+        'stop' : spot.date_end,
+        'name' : "Event",  # Fix calendar.appointment.spot.name and use as input
+        'user_id' : appointment.user_id.id,
+        'partner_ids' : [(4, spot.get_partner_from_token(token).id, 0), (4, appointment.user_id.partner_id.id, 0)]})
         
         spot.event_id = event.id
         
