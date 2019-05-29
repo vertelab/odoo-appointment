@@ -40,6 +40,7 @@
           var span = document.getElementsByClassName("close")[0];
           var spotid = document.getElementsByName("spot_id")[0];
           
+          
           modal.style.display = "block";
           spotid.value = info.event.id;
           
@@ -136,6 +137,7 @@
             <input type="hidden" name="spot_id" />
             <input type="hidden" name="token" t-att-value="appointment.token" />
             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+            <input type="hidden" name="attendee_id" t-att-value="partner.id" />
           </form>
           <button id="button_confirm" type="button" onclick="document.getElementById('modalForm').submit()" class="btn btn-success">Ja</button>
           <button id="button_decline" type="button" class="btn btn-danger" onclick="document.getElementById('myModal').style.display = null">Nej</button>

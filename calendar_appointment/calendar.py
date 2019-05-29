@@ -17,15 +17,15 @@ class calendar_appointment(models.Model):
 
     name = fields.Char(string = 'Name')
     attendee_ids = fields.Many2many(comodel_name ='res.partner') # Comodel_name 
-    # ~ product_ids = fields.Many2many(comodel_name = 'product.product')
+    # ~ product_ids = fields.Many2many(comodel_name = 'product.product') # I detta fall vilken massage som ska bokas in, vi behöver veta duration på produkten.
     spot_ids = fields.One2many(comodel_name = 'calendar.appointment.spot', inverse_name = 'appointment_id')
-    user_id = fields.Many2one(comodel_name = 'res.users')
+    user_id = fields.Many2one(comodel_name = 'res.users', required=True)
     is_published = fields.Boolean(string = 'Publish') # String represents a label
     description = fields.Text(string = 'Descriptions')
     meeting_type = fields.Selection([('One2one', 'One to One'),('Many2one', 'Many to One'),], 'Type Selections') # Ena värdet visa i dropdown och andra lagras i DB:n
-    date_due = fields.Date(string = 'Dates')
+    date_due = fields.Date(string = 'Date Due')
     attendee_ids_str = fields.Char(compute='compute_attendee_ids_str')
-    token = fields.Char() # anropar metoden när ett nytt recordset skapas
+    token = fields.Char()
 
     def compute_attendee_ids_str(self):
         self.attendee_ids_str = ','.join([str(a.id) for a in self.attendee_ids])
@@ -36,16 +36,9 @@ class calendar_appointment(models.Model):
         template.send_mail(self.id)
     
     @api.onchange('token')
-    def _create_token(self):
-        for attendee in attendee_ids:
-            self.token = hashlib.sha1(bytes(str(attendee.id), 'utf-8')).hexdigest()
+    def create_token(self):
+            self.token = hashlib.sha1(bytes(str(self.id), 'utf-8')).hexdigest()
     # onchange, default
-        
-class calendar_appointment_token(models.Model):
-    _name = 'calendar.appointment.token'
-    
-    token = field.Char()
-    appointment_id = fields.Many2one(comodel_name  = 'calendar.appointment')  
         
 class calendar_appointment_spot(models.Model):
 
@@ -64,8 +57,9 @@ class calendar_appointment_spot(models.Model):
     # ~ date_start_hh_mm = date_start.strftime("%h:%m")
     # ~ date_end_hh_mm = date_end.strftime("%h:%m")
     
-    def get_partner_from_token(self, token):
-        return self.env.ref('base.partner_demo')
+    # ~ def get_partner_from_token(self, token):
+        
+        # ~ return env['res.partner'].search([(hashlib.sha1(bytes(str(id), 'utf-8')).hexdigest()), '=', token)])
         
     
     def date_end_template_format(self):
@@ -141,6 +135,9 @@ class Wizard(models.TransientModel):
             # ~ raise Warning("Colliding spots: %s Current startdate: %s Current stopdate: %s"% (colliding_spots, current_startdate, current_stopdate))
                 
                 
+            if current_stopdate > self.date_stop:
+                break    
+            
             if not colliding_spots:
                 spot_ids.append(self.env['calendar.appointment.spot'].create({
                 'date_start' : current_startdate,
@@ -149,8 +146,6 @@ class Wizard(models.TransientModel):
                 'duration' : self.duration}).id)
                 spots_created += 1
              
-            if current_stopdate > self.date_stop:
-                break
             
             current_startdate += timedelta(hours=self.duration)
             
@@ -165,32 +160,43 @@ class Wizard(models.TransientModel):
         
                 
 class MyController(http.Controller):
-    @http.route('/appointment/<int:appointment_id>/<string:token>', type="http", website=True, auth='public')
-    def handler(self, appointment_id, token):
+    @http.route('/appointment/<int:appointment_id>/<int:attendee_id>/<string:token>', type="http", website=True, auth='public')
+    def handler(self, appointment_id, token, attendee_id):
         handler = http.request.env['calendar.appointment.spot'].sudo().search([('appointment_id', '=', appointment_id)])
         
         token_check = http.request.env['calendar.appointment'].sudo().search([('token', '=', token),('id', '=', appointment_id)])
         
+        partner_check = token_check.attendee_ids.filtered(lambda a : a.id == attendee_id)
+        # ~ raise Warning('Partner_check.id: %s token_check.attendee_ids: %s attendee_id: %s'%(partner_check.id, token_check.attendee_ids, attendee_id))
+
+        if not partner_check.id:
+            return request.not_found()
+                
+        
         if not token_check:
             return request.not_found()
         
-        return http.request.render('calendar_appointment.appointment_booking', {'spots':handler, 'appointment' : token_check})
+        return http.request.render('calendar_appointment.appointment_booking', {'spots':handler, 'appointment' : token_check, 'partner' : partner_check})
         
     @http.route('/appointment/spot', type="http", website=True, auth='public')
     def spot(self, **post):
         post.get("spot_id")
         token = post.get("token")
+        attendee_id = post.get("attendee_id")
         
        
         spot = http.request.env['calendar.appointment.spot'].sudo().browse(int(post.get("spot_id")))
         appointment = http.request.env['calendar.appointment'].search([('id', '=', spot.appointment_id.id)])
+        attendee = http.request.env['res.partner'].sudo().browse(int(post.get("attendee_id")))
         
+        # ~ raise Warning("Partner_id: %s appointment ID %s User ID: %s"%(appointment.user_id.partner_id.id, appointment.id, appointment.user_id.id))
         
         event = http.request.env['calendar.event'].sudo().create({'start' : spot.date_start, 
         'stop' : spot.date_end,
         'name' : "Event",  # Fix calendar.appointment.spot.name and use as input
         'user_id' : appointment.user_id.id,
-        'partner_ids' : [(4, spot.get_partner_from_token(token).id, 0), (4, appointment.user_id.partner_id.id, 0)]})
+        'partner_ids' : [(4, attendee.id, 0), (4, appointment.user_id.partner_id.id, 0)]})
+    
         
         spot.event_id = event.id
         

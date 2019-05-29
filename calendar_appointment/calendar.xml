@@ -70,6 +70,8 @@
               <field name="is_published" />
               <field name="meeting_type" />
               <field name="date_due" />
+              <field name="id" />
+              <field name="token" />
             </group>
             <group>
               <field name="user_id" />
