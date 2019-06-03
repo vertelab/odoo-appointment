@@ -140,6 +140,7 @@ class Wizard(models.TransientModel):
             
             if not colliding_spots:
                 spot_ids.append(self.env['calendar.appointment.spot'].create({
+                'name' : 'spot',
                 'date_start' : current_startdate,
                 'date_end' : current_startdate + timedelta(hours=self.duration),
                 'appointment_id' : self._context.get('active_id'),
@@ -186,17 +187,26 @@ class MyController(http.Controller):
         
        
         spot = http.request.env['calendar.appointment.spot'].sudo().browse(int(post.get("spot_id")))
-        appointment = http.request.env['calendar.appointment'].search([('id', '=', spot.appointment_id.id)])
+        appointment = http.request.env['calendar.appointment'].sudo().search([('id', '=', spot.appointment_id.id)])
         attendee = http.request.env['res.partner'].sudo().browse(int(post.get("attendee_id")))
         
-        # ~ raise Warning("Partner_id: %s appointment ID %s User ID: %s"%(appointment.user_id.partner_id.id, appointment.id, appointment.user_id.id))
+       
         
         event = http.request.env['calendar.event'].sudo().create({'start' : spot.date_start, 
         'stop' : spot.date_end,
         'name' : "Event",  # Fix calendar.appointment.spot.name and use as input
         'user_id' : appointment.user_id.id,
         'partner_ids' : [(4, attendee.id, 0), (4, appointment.user_id.partner_id.id, 0)]})
+        
+        # ~ raise Warning("Event: %s Partner_id: %s appointment ID %s User ID: %s Spot: %s Attendee: %s"%(event.id, appointment.user_id.partner_id.id, appointment.id, appointment.user_id.id, spot.id, attendee.id))
     
+        
+        
+        
+        # ~ raise Warning('%s %s'%(spot.appointment_id.attendee_ids.email, spot.appointment_id.user_id.email))
+        
+        # ~ template = http.request.env.ref('calendar_appointment.notify_creator')
+        # ~ template.send_mail(appointment.id)
         
         spot.event_id = event.id
         

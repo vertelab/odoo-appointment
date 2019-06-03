@@ -155,9 +155,18 @@
       End date:
       <t t-esc="spot.date_start" />
     </p>
-    <p>
-      Appointment:
-      <t t-esc="spot.name" />
-    </p>
   </template>
+  <record model="mail.template" id="notify_creator">
+    <field name="name">Booking confirmed</field>
+    <field name="model_id" ref="model_calendar_appointment_spot" />
+    <field name="email_from">info@example.com</field>
+    <field name="subject">Ny bokning med</field>
+    <field name="email_to">info@example.com</field>
+    <field name="lang" />
+    <field name="body_html">
+      <![CDATA[
+      <p>hej</p>
+      ]]>
+    </field>
+  </record>
 </odoo>
