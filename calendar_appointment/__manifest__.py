@@ -35,7 +35,7 @@ Its a calendar.
 		'calendar.xml', 
 		'template.xml',
 		'projectMeeting.xml',
-		'bookingcalendar.xml',
+		# ~ 'bookingcalendar.xml',
 		'security/ir.model.access.csv'
     ],
     'installable': True,

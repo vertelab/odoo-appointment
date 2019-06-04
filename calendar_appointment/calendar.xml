@@ -1,18 +1,18 @@
 <odoo>
   <record model="mail.template" id="invitation_model">
     <field name="name">Invitation email</field>
-    <field name="model_id" ref="model_calendar_appointment" />
-    <field name="email_from">${object.user_id.email}</field>
-    <field name="subject">Inbjudan till ${object.name}</field>
-    <field name="partner_to">${",".join([str(a.id) for a in object.attendee_ids])}</field>
+    <field name="model_id" ref="model_calendar_appointment_attendee" />
+    <field name="email_from">${object.appointment_id.user_id.email}</field>
+    <field name="subject">Inbjudan till ${object.appointment_id.name}</field>
+    <field name="partner_to">${object.partner_id.id}</field>
     <field name="lang" />
     <field name="body_html">
       <![CDATA[
-               <p>Hej! ${object.attendee_ids[0].name}</p>
-               <p>Du är inbjuden till mötet: ${object.name}! </p>
+               <p>Hej! ${object.partner_id.name}</p>
+               <p>Du är inbjuden till mötet: ${object.appointment_id.name}! </p>
                <p>Tryck på länken nedan för att välja lämplig tid:</p>
                
-               <a href="http://localhost:8069/appointment/${object.id}/${object.token}">Länk</a>
+               <a href="http://localhost:8069/appointment/${object.appointment_id.id}/${object.partner_id.id}/${object.appointment_id.token}">Länk</a>
       ]]>
     </field>
   </record>
