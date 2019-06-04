@@ -231,6 +231,25 @@ class MyController(http.Controller):
         
         return http.request.render('calendar_appointment.confirmed_booking', {'spot': spot})
         
+    @http.route('/meeting/<int:appointment_id>/<int:attendee_id>/<string:token>', type="http", website=True, auth='public')
+    def project_meeting_handler(self, appointment_id, attendee_id, token):
+
+        project_meeting_handler = http.request.env['calendar.appointment.spot'].sudo().search([('appointment_id', '=', appointment_id)])
+        token_check = http.request.env['calendar.appointment'].sudo().search([('token', '=', token),('id', '=', appointment_id)])
+        partner_check = token_check.attendee_ids.filtered(lambda a : a.id == attendee_id)
+        # ~ raise Warning('Partner_check.id: %s token_check.attendee_ids: %s attendee_id: %s'%(partner_check.id, token_check.attendee_ids, attendee_id))
+
+
+        if not partner_check:
+            return request.not_found()
+
+        if not token_check:
+            return request.not_found()
+
+
+        return http.request.render('calendar_appointment.meeting_booking', {'spots': project_meeting_handler, 'appointment' : token_check, 'partner' : partner_check})
+
+
 
     # ~ @http.route(['/appointment/json_test'], type='json', auth="public")
     # ~ def json_test(self):

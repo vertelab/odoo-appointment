@@ -1,5 +1,5 @@
 <odoo>
-  <template id="appointment_booking" name="Appointment booking">
+  <template id="meeting_booking" name="Meeting booking">
     <t t-call="website.layout">
       <t t-set="head">
         <link href='/calendar_appointment/static/fullcalendar-4.1.0/packages/core/main.css' rel='stylesheet' />
@@ -31,28 +31,8 @@
           editable: true,
           eventLimit: true, // allow "more" link when too many events
           
-          eventClick: function(info) {
-          console.log(info);
-          
-          
-          
-          var modal = document.getElementById("myModal");
-          var span = document.getElementsByClassName("close")[0];
-          var spotid = document.getElementsByName("spot_id")[0];
-          
-          
-          modal.style.display = "block";
-          spotid.value = info.event.id;
-          
-          span.onclick = function(info) {
-          modal.style.display = "none";
-          }
-          
-          window.onclick = function(info) {
-          if (info.target == modal) {
-          modal.style.display = "none";
-          }
-          }
+          eventClick: function(event) {
+          event.el.style.backgroundColor = 'green';
           },
           
           events: [
@@ -88,61 +68,44 @@
           margin: 0 auto;
           }
           
-          /* The Modal (background) */
-          .modal {
-          display: none; /* Hidden by default */
-          position: fixed; /* Stay in place */
-          z-index: 1; /* Sit on top */
-          left: 0;
-          top: 0;
-          width: 100%; /* Full width */
-          height: 100%; /* Full height */
-          overflow: auto; /* Enable scroll if needed */
-          background-color: rgb(0,0,0); /* Fallback color */
-          background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-          }
-          
-          /* Modal Content/Box */
-          .modal-content {
-          background-color: #fefefe;
-          margin: 15% auto; /* 15% from the top and centered */
-          padding: 20px;
-          border: 1px solid #888;
-          width: 40%; /* Could be more or less, depending on screen size */
-          }
-          
-          /* The Close Button */
-          .close {
-          color: #aaa;
+          #selectedSpots {
+          max-width: 60%;
           float: right;
-          font-size: 28px;
-          font-weight: bold;
-          }
-          
-          .close:hover,
-          .close:focus {
-          color: black;
-          text-decoration: none;
-          cursor: pointer;
           }
 
         </style>
       </t>
-      <div id='calendar' />
-      <div id="myModal" class="modal">
-        <div class="modal-content">
-          <span class="close">&#215;</span>
-          <p>Vill du bekräfta din bokning?</p>
-          <form id="modalForm" action="/appointment/spot" method="POST">
-            <input type="hidden" name="spot_id" />
-            <input type="hidden" name="token" t-att-value="appointment.token" />
-            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
-            <input type="hidden" name="attendee_id" t-att-value="partner.id" />
-          </form>
-          <button id="button_confirm" type="button" onclick="document.getElementById('modalForm').submit()" class="btn btn-success">Ja</button>
-          <button id="button_decline" type="button" class="btn btn-danger" onclick="document.getElementById('myModal').style.display = null">Nej</button>
-        </div>
+      <div id="calendar" />
+      <div id="selectedSpots">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Valda tillfällen</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Test</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Knapp för att bekräfta och för att rensa listan</td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
+      <!--
+           
+           <form id="modalForm" action="/appointment/spot" method="POST">
+           <input type="hidden" name="spot_id" />
+           <input type="hidden" name="token" t-att-value="appointment.token" />
+           <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+           <input type="hidden" name="attendee_id" t-att-value="partner.id" />
+           </form>
+           <button id="button_confirm" type="button" onclick="document.getElementById('modalForm').submit()" class="btn btn-success">Ja</button>
+           <button id="button_decline" type="button" class="btn btn-danger" onclick="document.getElementById('myModal').style.display = null">Nej</button>
+      -->
     </t>
   </template>
 </odoo>
