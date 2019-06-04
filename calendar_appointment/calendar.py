@@ -183,9 +183,7 @@ class MyController(http.Controller):
     @http.route('/appointment/<int:appointment_id>/<int:attendee_id>/<string:token>', type="http", website=True, auth='public')
     def handler(self, appointment_id, token, attendee_id):
         handler = http.request.env['calendar.appointment.spot'].sudo().search([('appointment_id', '=', appointment_id)])
-        
         token_check = http.request.env['calendar.appointment'].sudo().search([('token', '=', token),('id', '=', appointment_id)])
-        
         partner_check = token_check.attendee_ids.filtered(lambda a : a.id == attendee_id)
         # ~ raise Warning('Partner_check.id: %s token_check.attendee_ids: %s attendee_id: %s'%(partner_check.id, token_check.attendee_ids, attendee_id))
 
@@ -204,25 +202,15 @@ class MyController(http.Controller):
         token = post.get("token")
         attendee_id = post.get("attendee_id")
         
-       
         spot = http.request.env['calendar.appointment.spot'].sudo().browse(int(post.get("spot_id")))
         appointment = http.request.env['calendar.appointment'].sudo().search([('id', '=', spot.appointment_id.id)])
         attendee = http.request.env['res.partner'].sudo().browse(int(post.get("attendee_id")))
-        
-       
         
         event = http.request.env['calendar.event'].sudo().create({'start' : spot.date_start, 
         'stop' : spot.date_end,
         'name' : "Event",  # Fix calendar.appointment.spot.name and use as input
         'user_id' : appointment.user_id.id,
         'partner_ids' : [(4, attendee.id, 0), (4, appointment.user_id.partner_id.id, 0)]})
-        
-        # ~ raise Warning("Event: %s Partner_id: %s appointment ID %s User ID: %s Spot: %s Attendee: %s"%(event.id, appointment.user_id.partner_id.id, appointment.id, appointment.user_id.id, spot.id, attendee.id))
-    
-        
-        
-        
-        # ~ raise Warning('%s %s'%(spot.appointment_id.attendee_ids.email, spot.appointment_id.user_id.email))
         
         # ~ template = http.request.env.ref('calendar_appointment.notify_creator')
         # ~ template.send_mail(appointment.id)
@@ -248,10 +236,16 @@ class MyController(http.Controller):
 
 
         return http.request.render('calendar_appointment.meeting_booking', {'spots': project_meeting_handler, 'appointment' : token_check, 'partner' : partner_check})
-
-
-
-    # ~ @http.route(['/appointment/json_test'], type='json', auth="public")
-    # ~ def json_test(self):
-        # ~ return [1, 2, 5, {'a': 2}]
-    
+        
+    @http.route('/meeting/spot', type="http", website=True, auth="public")
+    def handler_meeting(self, **post):
+        post.get("spot_id")
+        post.get("token")
+        post.get("attendee_id")
+        
+        spot = http.request.env['calendar.appointment.spot'].sudo().browse(int(post.get("spot_id")))
+        handler = http.request.env['calendar.appointment.spot'].sudo().search([('appointment_id', '=', spot.appointment_id.id)])
+        token_check = http.request.env['calendar.appointment'].sudo().search([('token', '=', token),('id', '=', spot.appointment_id.id)])
+        partner_check = token_check.attendee_ids.filtered(lambda a : a.id == attendee_id)
+        
+        return http.request.render('calendar_appointment.appointment_booking', {'spots':handler, 'appointment' : token_check, 'partner' : partner_check, 'spot':spot})

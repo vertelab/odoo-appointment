@@ -32,7 +32,25 @@
           eventLimit: true, // allow "more" link when too many events
           
           eventClick: function(event) {
+          
+          if (event.el.style.backgroundColor == 'green'){
+          event.el.style.backgroundColor = '#3788d8';
+          //removefromlist()
+          }
+          else{
           event.el.style.backgroundColor = 'green';
+          
+          var spotid = document.getElementsByName("spot_id")[0];
+          spotid.value = event.event.id;
+          var outputspots = document.getElementById("outputOfSpots");
+          
+          selectedSpots = [];
+          selectedSpots.push(spotid);
+          
+          for (spot in selectedSpots) {
+          outputspots.innerHTML += '<tr>'+spot+'</tr>';
+          }
+          }
           },
           
           events: [
@@ -69,43 +87,34 @@
           }
           
           #selectedSpots {
-          max-width: 60%;
           float: right;
           }
 
         </style>
       </t>
       <div id="calendar" />
-      <div id="selectedSpots">
+      <div>
         <table class="table table-striped">
           <thead>
             <tr>
               <th>Valda tillfällen</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>Test</td>
-            </tr>
+          <tbody id="outputOfSpots">
           </tbody>
           <tfoot>
             <tr>
-              <td>Knapp för att bekräfta och för att rensa listan</td>
+              <form id="modalForm" action="/meeting/spot" method="POST">
+                <input type="hidden" name="spot_id" />
+                <input type="hidden" name="token" t-att-value="appointment.token" />
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                <input type="hidden" name="attendee_id" t-att-value="partner.id" />
+              </form>
+              <button id="button_confirm" type="button" onclick="document.getElementById('modalForm').submit()" class="btn btn-success">Bekräfta</button>
             </tr>
           </tfoot>
         </table>
       </div>
-      <!--
-           
-           <form id="modalForm" action="/appointment/spot" method="POST">
-           <input type="hidden" name="spot_id" />
-           <input type="hidden" name="token" t-att-value="appointment.token" />
-           <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
-           <input type="hidden" name="attendee_id" t-att-value="partner.id" />
-           </form>
-           <button id="button_confirm" type="button" onclick="document.getElementById('modalForm').submit()" class="btn btn-success">Ja</button>
-           <button id="button_decline" type="button" class="btn btn-danger" onclick="document.getElementById('myModal').style.display = null">Nej</button>
-      -->
     </t>
   </template>
 </odoo>
