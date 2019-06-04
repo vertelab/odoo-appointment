@@ -12,7 +12,7 @@
                <p>Du är inbjuden till mötet: ${object.name}! </p>
                <p>Tryck på länken nedan för att välja lämplig tid:</p>
                
-               <a href="http://localhost:8069/appointment//${object.id}/${object.token}">Länk</a>
+               <a href="http://localhost:8069/appointment/${object.id}/${object.token}">Länk</a>
       ]]>
     </field>
   </record>

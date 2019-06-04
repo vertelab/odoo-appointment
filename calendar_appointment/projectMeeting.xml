@@ -1,0 +1,148 @@
+<odoo>
+  <template id="appointment_booking" name="Appointment booking">
+    <t t-call="website.layout">
+      <t t-set="head">
+        <link href='/calendar_appointment/static/fullcalendar-4.1.0/packages/core/main.css' rel='stylesheet' />
+        <link href='/calendar_appointment/static/fullcalendar-4.1.0/packages/daygrid/main.css' rel='stylesheet' />
+        <link href='/calendar_appointment/static/fullcalendar-4.1.0/packages/timegrid/main.css' rel='stylesheet' />
+        <link href='/calendar_appointment/static/fullcalendar-4.1.0/packages/list/main.css' rel='stylesheet' />
+        <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/core/main.js' />
+        <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/interaction/main.js' />
+        <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/daygrid/main.js' />
+        <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/timegrid/main.js' />
+        <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/list/main.js' />
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+          var calendarEl = document.getElementById('calendar');
+          
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+          plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+          header: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+          },
+          navLinks: true, // can click day/week names to navigate views
+          
+          weekNumbers: true,
+          weekNumbersWithinDays: true,
+          weekNumberCalculation: 'ISO',
+          
+          editable: true,
+          eventLimit: true, // allow "more" link when too many events
+          
+          eventClick: function(info) {
+          console.log(info);
+          
+          
+          
+          var modal = document.getElementById("myModal");
+          var span = document.getElementsByClassName("close")[0];
+          var spotid = document.getElementsByName("spot_id")[0];
+          
+          
+          modal.style.display = "block";
+          spotid.value = info.event.id;
+          
+          span.onclick = function(info) {
+          modal.style.display = "none";
+          }
+          
+          window.onclick = function(info) {
+          if (info.target == modal) {
+          modal.style.display = "none";
+          }
+          }
+          },
+          
+          events: [
+          <t t-foreach="spots" t-as="spot">
+            <t t-if="not spot.event_id">
+              {
+              title: 'Möte',
+              id:
+              <t t-esc="''''%s','''%spot.id" />
+              start:
+              <t t-esc="''''%s','''%spot.date_start_template_format()" />
+              end: '2019-04-13'
+              },
+            </t>
+          </t>
+          ]
+          });
+          
+          calendar.render();
+          });
+
+        </script>
+        <style>
+          body {
+          margin: 40px 10px;
+          padding: 0;
+          font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+          font-size: 14px;
+          }
+          
+          #calendar {
+          max-width: 900px;
+          margin: 0 auto;
+          }
+          
+          /* The Modal (background) */
+          .modal {
+          display: none; /* Hidden by default */
+          position: fixed; /* Stay in place */
+          z-index: 1; /* Sit on top */
+          left: 0;
+          top: 0;
+          width: 100%; /* Full width */
+          height: 100%; /* Full height */
+          overflow: auto; /* Enable scroll if needed */
+          background-color: rgb(0,0,0); /* Fallback color */
+          background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+          }
+          
+          /* Modal Content/Box */
+          .modal-content {
+          background-color: #fefefe;
+          margin: 15% auto; /* 15% from the top and centered */
+          padding: 20px;
+          border: 1px solid #888;
+          width: 40%; /* Could be more or less, depending on screen size */
+          }
+          
+          /* The Close Button */
+          .close {
+          color: #aaa;
+          float: right;
+          font-size: 28px;
+          font-weight: bold;
+          }
+          
+          .close:hover,
+          .close:focus {
+          color: black;
+          text-decoration: none;
+          cursor: pointer;
+          }
+
+        </style>
+      </t>
+      <div id='calendar' />
+      <div id="myModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&#215;</span>
+          <p>Vill du bekräfta din bokning?</p>
+          <form id="modalForm" action="/appointment/spot" method="POST">
+            <input type="hidden" name="spot_id" />
+            <input type="hidden" name="token" t-att-value="appointment.token" />
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+            <input type="hidden" name="attendee_id" t-att-value="partner.id" />
+          </form>
+          <button id="button_confirm" type="button" onclick="document.getElementById('modalForm').submit()" class="btn btn-success">Ja</button>
+          <button id="button_decline" type="button" class="btn btn-danger" onclick="document.getElementById('myModal').style.display = null">Nej</button>
+        </div>
+      </div>
+    </t>
+  </template>
+</odoo>

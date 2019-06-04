@@ -22,11 +22,14 @@ class calendar_appointment(models.Model):
     user_id = fields.Many2one(comodel_name = 'res.users', required=True)
     is_published = fields.Boolean(string = 'Publish') # String represents a label
     description = fields.Text(string = 'Descriptions')
+    # B
     meeting_type = fields.Selection([('One2one', 'One to One'),('Many2one', 'Many to One'),], 'Type Selections') # Ena värdet visa i dropdown och andra lagras i DB:n
     date_due = fields.Date(string = 'Date Due')
     attendee_ids_str = fields.Char(compute='compute_attendee_ids_str')
     token = fields.Char()
 
+
+    
     def compute_attendee_ids_str(self):
         self.attendee_ids_str = ','.join([str(a.id) for a in self.attendee_ids])
     
@@ -216,3 +219,4 @@ class MyController(http.Controller):
     # ~ @http.route(['/appointment/json_test'], type='json', auth="public")
     # ~ def json_test(self):
         # ~ return [1, 2, 5, {'a': 2}]
+    

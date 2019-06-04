@@ -34,6 +34,8 @@ Its a calendar.
     'data': [
 		'calendar.xml', 
 		'template.xml',
+		'projectMeeting.xml',
+		'bookingcalendar.xml',
 		'security/ir.model.access.csv'
     ],
     'installable': True,
