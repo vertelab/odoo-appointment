@@ -33,13 +33,10 @@
           
           eventClick: function(info) {
           console.log(info);
-          
-          
-          
+
           var modal = document.getElementById("myModal");
           var span = document.getElementsByClassName("close")[0];
           var spotid = document.getElementsByName("spot_id")[0];
-          
           
           modal.style.display = "block";
           spotid.value = info.event.id;
