@@ -144,20 +144,31 @@ class Wizard(models.TransientModel):
             
             current_stopdate = current_startdate + timedelta(hours=self.duration)
             
-            colliding_spots = self.env['calendar.event'].search([
+            colliding_events = self.env['calendar.event'].search([
             "&",
                 ('start_datetime', '<=', current_startdate),
                 ('stop_datetime', '>=', current_startdate),
             "|",
                 ('start_datetime', '<=', current_stopdate),
                 ('stop_datetime', '>=', current_stopdate)])
-            # ~ raise Warning("Colliding spots: %s Current startdate: %s Current stopdate: %s"% (colliding_spots, current_startdate, current_stopdate))
-                
-                
+            # ~ raise Warning("Colliding spots: %s Current startdate: %s Current stopdate: %s"% (colliding_events, current_startdate, current_stopdate))
+            
+            colliding_spots = self.env['calendar.appointment.spot'].search([
+            ('appointment_id', '=', appointment.id),
+            "&",
+                ('date_start', '<=', current_startdate),
+                ('date_end', '>=', current_startdate),
+            "|",
+                ('date_start', '<=', current_stopdate),
+                ('date_end', '>=', current_stopdate)])
+            
+            # ~ raise Warning("Spots: %s Events: %s"%(colliding_spots, colliding_events))
+            
             if current_stopdate > self.date_stop:
+                """ Alert(Det fanns inte fler lediga tillfällen.)"""
                 break    
             
-            if not colliding_spots:
+            if not colliding_events and not colliding_spots:
                 spot_ids.append(self.env['calendar.appointment.spot'].create({
                 'name' : 'spot',
                 'date_start' : current_startdate,
@@ -166,7 +177,10 @@ class Wizard(models.TransientModel):
                 'duration' : self.duration}).id)
                 spots_created += 1
              
-            
+            """ Byt ut alla colliding_spots mot colliding_events i dokumentet.
+                
+                
+            """
             current_startdate += timedelta(hours=self.duration)
             
                 
