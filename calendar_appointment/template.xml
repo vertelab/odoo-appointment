@@ -56,7 +56,8 @@
           <t t-foreach="spots" t-as="spot">
             <t t-if="not spot.event_id">
               {
-              title: 'Möte',
+              title: 
+              <t t-esc="''''%s','''%spot.name"/>
               id:
               <t t-esc="''''%s','''%spot.id" />
               start:
