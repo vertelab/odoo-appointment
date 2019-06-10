@@ -257,12 +257,10 @@ class MyController(http.Controller):
         post.get("token")
         post.get("attendee_id")
         
-        lists = post.get("spot_ids").split(',')
         
-        raise Warning("Spot_ids: %s post.get: %s"%(lists, post.get("spot_ids")))
         
-        # ~ spot_ids = [int(s) for s in ]
-        
+        spot_ids = [int(s) for s in post.get("spot_ids").split(',')]
+        spots = []
         
         attendee = http.request.env['res.partner'].sudo().browse(int(post.get("attendee_id")))
                 
@@ -271,8 +269,8 @@ class MyController(http.Controller):
             
             spots += spot
             
-            spot.attendee_ids.append(attendee)
+            spot.write({'partner_ids' : [(4, attendee.id, 0)]})
         
 
         
-        return http.request.render('calendar_appointment.appointment_booking', {'spots':handler, 'partner' : partner_check})
+        return http.request.render('calendar_appointment.meeting_confirmed_booking', {'spots' : spots})

@@ -48,7 +48,7 @@
           selectedSpots.splice(selectedSpots.indexOf(event.event.id),1);
           stringSelectedSpots.splice(stringSelectedSpots.indexOf(event.event.id), 1);
           
-          spotIds = stringSelectedSpots.join()
+          spotIds.value = stringSelectedSpots.join()
           
           
           outputspots.innerHTML = ' '
@@ -64,9 +64,7 @@
           selectedSpots.push(thisEvent);
           stringSelectedSpots.push(thisEvent.id);
           
-          spotIds = stringSelectedSpots.join()
-		  alert(spotIds)
-		  
+          spotIds.value = stringSelectedSpots.join()
 
 
           outputspots.innerHTML = ' '
@@ -152,7 +150,7 @@
       </div>
     </t>
   </template>
-   <template id="confirmed_booking">
+   <template id="meeting_confirmed_booking">
     <p>Booking confirmation</p>
   </template>
 </odoo>
