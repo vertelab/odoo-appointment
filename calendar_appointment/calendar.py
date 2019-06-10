@@ -253,13 +253,26 @@ class MyController(http.Controller):
         
     @http.route('/meeting/spot', type="http", website=True, auth="public")
     def handler_meeting(self, **post):
-        post.get("spot_id")
+        post.get("spot_ids")
         post.get("token")
         post.get("attendee_id")
         
-        spot = http.request.env['calendar.appointment.spot'].sudo().browse(int(post.get("spot_id")))
-        handler = http.request.env['calendar.appointment.spot'].sudo().search([('appointment_id', '=', spot.appointment_id.id)])
-        token_check = http.request.env['calendar.appointment'].sudo().search([('token', '=', token),('id', '=', spot.appointment_id.id)])
-        partner_check = token_check.attendee_ids.filtered(lambda a : a.id == attendee_id)
+        lists = post.get("spot_ids").split(',')
         
-        return http.request.render('calendar_appointment.appointment_booking', {'spots':handler, 'appointment' : token_check, 'partner' : partner_check, 'spot':spot})
+        raise Warning("Spot_ids: %s post.get: %s"%(lists, post.get("spot_ids")))
+        
+        # ~ spot_ids = [int(s) for s in ]
+        
+        
+        attendee = http.request.env['res.partner'].sudo().browse(int(post.get("attendee_id")))
+                
+        for spot_id in spot_ids:
+            spot = http.request.env['calendar.appointment.spot'].sudo().browse(spot_id)
+            
+            spots += spot
+            
+            spot.attendee_ids.append(attendee)
+        
+
+        
+        return http.request.render('calendar_appointment.appointment_booking', {'spots':handler, 'partner' : partner_check})

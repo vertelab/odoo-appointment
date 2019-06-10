@@ -19,9 +19,10 @@
           var calendarEl = document.getElementById('calendar');
           
           selectedSpots = [];
+          stringSelectedSpots = [];
           var outputspots = document.getElementById("outputOfSpots");
           
-          var spotId = document.getElementsByName("spot_id")[0]; 
+          var spotIds = document.getElementsByName("spot_ids")[0]; 
           
           
           var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -45,10 +46,14 @@
           if (event.el.style.backgroundColor == 'green'){
           
           selectedSpots.splice(selectedSpots.indexOf(event.event.id),1);
+          stringSelectedSpots.splice(stringSelectedSpots.indexOf(event.event.id), 1);
+          
+          spotIds = stringSelectedSpots.join()
+          
           
           outputspots.innerHTML = ' '
           for (spot in selectedSpots) {
-			outputspots.innerHTML += '<tr>' + selectedSpots[spot] + '</tr>';
+			 outputspots.innerHTML += '<tr>'+ selectedSpots[spot].startdate + " - " + selectedSpots[spot].enddate +'</tr>';
           }
           
           
@@ -57,7 +62,10 @@
           else{
           thisEvent = {id : event.event.id, startdate : event.event.start, enddate : event.event.end}
           selectedSpots.push(thisEvent);
-
+          stringSelectedSpots.push(thisEvent.id);
+          
+          spotIds = stringSelectedSpots.join()
+		  alert(spotIds)
 		  
 
 
@@ -132,7 +140,7 @@
           <tfoot>
             <tr>
               <form id="modalForm" action="/meeting/spot" method="POST">
-                <input type="hidden" name="spot_id" />
+                <input type="hidden" name="spot_ids" />
                 <input type="hidden" name="token" t-att-value="appointment.token" />
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
                 <input type="hidden" name="attendee_id" t-att-value="partner.id" />
@@ -143,5 +151,8 @@
         </table>
       </div>
     </t>
+  </template>
+   <template id="confirmed_booking">
+    <p>Booking confirmation</p>
   </template>
 </odoo>
