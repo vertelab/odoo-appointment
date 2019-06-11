@@ -65,7 +65,7 @@ class calendar_appointment_spot(models.Model):
     _description = 'Spot for calendars appointment'
     
     
-    name = fields.Char(string='Name')
+    name = fields.Char(string='Name', required=True)
     appointment_id = fields.Many2one(comodel_name='calendar.appointment')
     partner_ids = fields.Many2many(comodel_name='res.partner')
     event_id = fields.Many2one(comodel_name='calendar.event')

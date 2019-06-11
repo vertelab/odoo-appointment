@@ -19,7 +19,7 @@
           var calendarEl = document.getElementById('calendar');
           
           selectedSpots = [];
-          stringSelectedSpots = [];
+          selectedSpotsIds = [];
           var outputspots = document.getElementById("outputOfSpots");
           
           var spotIds = document.getElementsByName("spot_ids")[0]; 
@@ -46,9 +46,9 @@
           if (event.el.style.backgroundColor == 'green'){
           
           selectedSpots.splice(selectedSpots.indexOf(event.event.id),1);
-          stringSelectedSpots.splice(stringSelectedSpots.indexOf(event.event.id), 1);
+          selectedSpotsIds.splice(selectedSpotsIds.indexOf(event.event.id), 1);
           
-          spotIds.value = stringSelectedSpots.join()
+          spotIds.value = selectedSpotsIds.join()
           
           
           outputspots.innerHTML = ' '
@@ -62,9 +62,9 @@
           else{
           thisEvent = {id : event.event.id, startdate : event.event.start, enddate : event.event.end}
           selectedSpots.push(thisEvent);
-          stringSelectedSpots.push(thisEvent.id);
+          selectedSpotsIds.push(thisEvent.id);
           
-          spotIds.value = stringSelectedSpots.join()
+          spotIds.value = selectedSpotsIds.join()
 
 
           outputspots.innerHTML = ' '
@@ -88,8 +88,9 @@
           <t t-foreach="spots" t-as="spot">
             <t t-if="not spot.event_id">
               {
+				
                 title: 
-              <t t-esc="''''%s','''%spot.name"/>
+              <t t-esc="''''%s %s','''%(spot.name, len(spot.partner_ids))"/>
               id:
               <t t-esc="''''%s','''%spot.id" />
               start:
@@ -150,7 +151,19 @@
       </div>
     </t>
   </template>
-   <template id="meeting_confirmed_booking">
-    <p>Booking confirmation</p>
-  </template>
+<template id="meeting_confirmed_booking">
+      <t t-call="website.layout">
+         <t t-set="head">
+            <H3>Booking confirmation</H3>
+            <p>You have chosen the following spots</p>
+            <t t-foreach="spots" t-as="spot">
+               start:
+               <t t-esc="spot.date_start_template_format()" />
+               end:
+               <t t-esc="spot.date_end_template_format()" />
+               <br />
+            </t>
+         </t>
+      </t>
+   </template>
 </odoo>
