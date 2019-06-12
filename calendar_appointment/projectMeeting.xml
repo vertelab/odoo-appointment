@@ -42,7 +42,7 @@
           eventLimit: true, // allow "more" link when too many events
           
           eventClick: function(event) {
-          
+          console.log(event);
           if (event.el.style.backgroundColor == 'green'){
           
           selectedSpots.splice(selectedSpots.indexOf(event.event.id),1);
@@ -57,7 +57,7 @@
           }
           
           
-          event.el.style.backgroundColor = '#3788d8';
+          event.event.setProp('backgroundColor', '#3788d8');
           }
           else{
           thisEvent = {id : event.event.id, startdate : event.event.start, enddate : event.event.end}
@@ -78,8 +78,7 @@
           
 
           
-          event.el.style.backgroundColor = 'green';
-          
+          event.event.setProp('backgroundColor', 'green');
           }
           
           },
@@ -105,6 +104,8 @@
           
           calendar.render();
           });
+          
+          
 
         </script>
         <style>
@@ -166,4 +167,19 @@
          </t>
       </t>
    </template>
+
+<!--
+          <data noupdate="1">
+   <record id="date_due_check" model="ir.cron">
+   <field name="name">Date Due Check</field>
+   <field name="active" eval="True"/>
+   <field name="interval_number">1</field>
+   <field name="interval_type">days</field>
+   <field name="doall">1</field>
+   <field name="numbercall">-1</field>
+   <field name="nextcall" eval="appointment.date_due"/>
+   <field name="function" eval="appointment.date_due_check"/>
+   </record>
+   </data>
+-->
 </odoo>

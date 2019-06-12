@@ -58,6 +58,10 @@ class calendar_appointment(models.Model):
     def create_token(self):
             self.token = hashlib.sha1(bytes(str(self.id), 'utf-8')).hexdigest()
     # onchange, default
+    
+    @api.multi
+    def date_due_check(self):
+        send_invitation_template()
         
 class calendar_appointment_spot(models.Model):
 
