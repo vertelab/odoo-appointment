@@ -20,7 +20,7 @@
           header: {
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+          right: 'dayGridMonth,timeGridWeek,timeGridDay,listYear'
           },
           navLinks: true, // can click day/week names to navigate views
           
@@ -28,7 +28,7 @@
           weekNumbersWithinDays: true,
           weekNumberCalculation: 'ISO',
           
-          editable: true,
+          editable: false,
           eventLimit: true, // allow "more" link when too many events
           
           eventClick: function(info) {
@@ -62,7 +62,8 @@
               <t t-esc="''''%s','''%spot.id" />
               start:
               <t t-esc="''''%s','''%spot.date_start_template_format()" />
-              end: '2019-04-13'
+              end: 
+              <t t-esc="''''%s','''%spot.date_end_template_format()" />
               },
             </t>
           </t>
@@ -151,7 +152,7 @@
     </p>
     <p>
       End date:
-      <t t-esc="spot.date_start" />
+      <t t-esc="spot.date_end" />
     </p>
   </template>
   <record model="mail.template" id="notify_creator">

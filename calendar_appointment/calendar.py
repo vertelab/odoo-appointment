@@ -59,9 +59,6 @@ class calendar_appointment(models.Model):
             self.token = hashlib.sha1(bytes(str(self.id), 'utf-8')).hexdigest()
     # onchange, default
     
-    @api.multi
-    def date_due_check(self):
-        send_invitation_template()
         
 class calendar_appointment_spot(models.Model):
 
@@ -115,18 +112,22 @@ class Wizard(models.TransientModel):
     nmbr_spots = fields.Integer(string='Number of Spots')
     nmbr_spots_per_day = fields.Integer(string='Number of spots per day')
     
-    @api.one
+    @api.multi
     def test_function(self):
         appointment = self._default_appointment()
-        if not appointment and appointment.user_id:
-            raise Warning(_("appointment or user missing, please choose an appointment and user"))
+        spots_to_use = []
         
-        event_list = self.env['calendar.event'].search([('start_date','>=',self.date_start), ('stop_date', '<=',self.date_stop), ('user_id', '=', appointment.user_id.id)])
-        event_list2 = self.env['calendar.event'].search([])
-                
-                # ~ filtered_list = spot_list.filtered(lambda r: r.event_list.contains())
+        i = 0
         
-        raise Warning("hej %s %s %s %s %s %s %s"% (union_list, intersect_list, event_list, event_list2, self.date_start, self.date_stop, appointment.user_id))
+        
+        
+        for spot in appointment.spot_ids.sorted(key=lambda s: len(s.partner_ids), reverse=True):
+            i += 1
+            spots_to_use.append(spot)
+            if i >= 10:
+                break
+            
+        raise Warning("%s"%(spots_to_use))
             
     @api.multi
     def create_spots(self):
@@ -185,7 +186,7 @@ class Wizard(models.TransientModel):
                 
                 
             """
-            current_startdate += timedelta(hours=self.duration)
+            current_startdate += timedelta(hours=self.duration, minutes=5)
             
                 
             
@@ -204,6 +205,8 @@ class MyController(http.Controller):
         token_check = http.request.env['calendar.appointment'].sudo().search([('token', '=', token),('id', '=', appointment_id)])
         partner_check = token_check.attendee_ids.filtered(lambda a : a.id == attendee_id)
         # ~ raise Warning('Partner_check.id: %s token_check.attendee_ids: %s attendee_id: %s'%(partner_check.id, token_check.attendee_ids, attendee_id))
+
+        
 
         if not partner_check.id:
             return request.not_found()
@@ -278,3 +281,30 @@ class MyController(http.Controller):
 
         
         return http.request.render('calendar_appointment.meeting_confirmed_booking', {'spots' : spots})
+        
+    @http.route('/meeting/booking/<int:appointment_id>/<int:attendee_id>/<string:token>', type="http", website=True, auth='public')
+    def handler_meeting_booking(self, appointment_id, attendee_id, token):
+        token_check = http.request.env['calendar.appointment'].sudo().search([('token', '=', token),('id', '=', appointment_id)])
+        partner_check = token_check.attendee_ids.filtered(lambda a : a.id == attendee_id)
+        # ~ raise Warning('Partner_check.id: %s token_check.attendee_ids: %s attendee_id: %s'%(partner_check.id, token_check.attendee_ids, attendee_id))
+
+        
+
+        if not partner_check.id:
+            return request.not_found()
+                
+        if not token_check:
+            return request.not_found()
+            
+        spots_to_use = []
+        i = 0
+        for spot in token_check.spot_ids.sorted(key=lambda s: len(s.partner_ids), reverse=True):
+            i += 1
+            spots_to_use.append(spot)
+            if i >= 10:
+               break
+            
+        return http.request.render('calendar_appointment.meeting_final_booking', {'spots' : spots_to_use, 'appointment' : token_check, 'partner' : partner_check})
+
+
+    
