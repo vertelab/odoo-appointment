@@ -11,11 +11,14 @@
         <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/daygrid/main.js' />
         <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/timegrid/main.js' />
         <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/list/main.js' />
+        <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/core/locales-all.js'/>
         <script>
-			
+            
 
-			
-          document.addEventListener('DOMContentLoaded', function() {
+            
+          document.addEventListener('DOMContentLoaded', function() {    
+          var initialLocaleCode = 'sv';
+          var localeSelectorEl = document.getElementById('locale-selector');
           var calendarEl = document.getElementById('calendar');
           
           selectedSpots = [];
@@ -32,6 +35,7 @@
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay,listYear'
           },
+          locale: initialLocaleCode,
           navLinks: true, // can click day/week names to navigate views
           
           weekNumbers: true,
@@ -53,7 +57,7 @@
           
           outputspots.innerHTML = ' '
           for (spot in selectedSpots) {
-			 outputspots.innerHTML += '<tr>'+ selectedSpots[spot].startdate + " - " + selectedSpots[spot].enddate +'</tr>';
+             outputspots.innerHTML += '<tr>'+ selectedSpots[spot].startdate + " - " + selectedSpots[spot].enddate +'</tr>';
           }
           
           
@@ -65,16 +69,16 @@
           selectedSpotsIds.push(thisEvent.id);
           
           spotIds.value = selectedSpotsIds.join()
-		  alert(event.event.id)
+          alert(event.event.id)
 
           outputspots.innerHTML = ' '
           
           
           
           
-		  for (spot in selectedSpots) {
-		  outputspots.innerHTML += '<tr>'+ selectedSpots[spot].startdate + " - " + selectedSpots[spot].enddate +'</tr>';
-	      }
+          for (spot in selectedSpots) {
+          outputspots.innerHTML += '<tr>'+ selectedSpots[spot].startdate + " - " + selectedSpots[spot].enddate +'</tr>';
+          }
           
 
           
@@ -87,7 +91,7 @@
           <t t-foreach="spots" t-as="spot">
             <t t-if="not spot.event_id">
               {
-				
+                
                 title: 
               <t t-esc="''''%s %s','''%(spot.name, len(spot.partner_ids))"/>
               id:
@@ -103,30 +107,65 @@
           });
           
           calendar.render();
+          
+                  // build the locale selector's options
+            calendar.getAvailableLocaleCodes().forEach(function(localeCode) {
+            var optionEl = document.createElement('option');
+            optionEl.value = localeCode;
+            optionEl.selected = localeCode == initialLocaleCode;
+            optionEl.innerText = localeCode;
+            localeSelectorEl.appendChild(optionEl);
+            });
+
+            // when the selected option changes, dynamically change the calendar option
+            localeSelectorEl.addEventListener('change', function() {
+              if (this.value) {
+            calendar.setOption('locale', this.value);
+              }
+            });
+          
           });
+          
           
           
 
         </script>
         <style>
           body {
-          margin: 40px 10px;
+          margin: 0;
           padding: 0;
           font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
           font-size: 14px;
           }
           
           #calendar {
-          max-width: 900px;
-          margin: 0 auto;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 10px;
           }
           
           #selectedSpots {
           float: right;
           }
+          
+            #top {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            padding: 0 10px;
+            line-height: 40px;
+            font-size: 12px;
+          }
 
         </style>
       </t>
+      <body>
+            <div id='top'>
+
+    Locales:
+    <select id='locale-selector'></select>
+
+  </div>
+          
       <div id="calendar" />
       <div>
         <table class="table table-striped">
@@ -150,6 +189,7 @@
           </tfoot>
         </table>
       </div>
+      </body>
     </t>
   </template>
 <template id="meeting_confirmed_booking">
@@ -196,11 +236,16 @@
         <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/daygrid/main.js' />
         <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/timegrid/main.js' />
         <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/list/main.js' />
+        <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/core/locales-all.js'/>
         <script>
           document.addEventListener('DOMContentLoaded', function() {
           var calendarEl = document.getElementById('calendar');
+          var initialLocaleCode = 'sv';
+          var localeSelectorEl = document.getElementById('locale-selector');
+          
           
           var calendar = new FullCalendar.Calendar(calendarEl, {
+            
           plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
           header: {
           left: 'prev,next today',
@@ -208,7 +253,7 @@
           right: 'dayGridMonth,timeGridWeek,timeGridDay,listYear'
           },
           navLinks: true, // can click day/week names to navigate views
-          
+          locale: initialLocaleCode,
           weekNumbers: true,
           weekNumbersWithinDays: true,
           weekNumberCalculation: 'ISO',
@@ -256,20 +301,45 @@
           });
           
           calendar.render();
+          
+              // build the locale selector's options
+            calendar.getAvailableLocaleCodes().forEach(function(localeCode) {
+              var optionEl = document.createElement('option');
+              optionEl.value = localeCode;
+              optionEl.selected = localeCode == initialLocaleCode;
+              optionEl.innerText = localeCode;
+              localeSelectorEl.appendChild(optionEl);
+            });
+
+            // when the selected option changes, dynamically change the calendar option
+            localeSelectorEl.addEventListener('change', function() {
+              if (this.value) {
+                calendar.setOption('locale', this.value);
+            }
+          });
           });
 
         </script>
         <style>
           body {
-          margin: 40px 10px;
-          padding: 0;
-          font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-          font-size: 14px;
+             margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+            font-size: 14px;
+          } 
+
+            #top {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            padding: 0 10px;
+            line-height: 40px;
+            font-size: 12px;
           }
           
           #calendar {
-          max-width: 900px;
-          margin: 0 auto;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 10px;
           }
           
           /* The Modal (background) */
@@ -312,7 +382,14 @@
 
         </style>
       </t>
-      <div id='calendar' />
+      <body>
+        <div id='top'>
+
+            Locales:
+            <select id='locale-selector'></select>
+
+        </div>
+        <div id='calendar' />
       <div id="myModal" class="modal">
         <div class="modal-content">
           <span class="close">&#215;</span>
@@ -327,6 +404,7 @@
           <button id="button_decline" type="button" class="btn btn-danger" onclick="document.getElementById('myModal').style.display = null">Nej</button>
         </div>
       </div>
+      </body>
     </t>
   </template>
 </odoo>

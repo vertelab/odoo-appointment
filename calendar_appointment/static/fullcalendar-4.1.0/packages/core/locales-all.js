@@ -1212,7 +1212,7 @@ Docs & License: https://fullcalendar.io/
             month: "Månad",
             week: "Vecka",
             day: "Dag",
-            list: "Program"
+            list: "Lista"
         },
         weekLabel: "v.",
         allDayText: "Heldag",

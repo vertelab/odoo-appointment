@@ -50,9 +50,14 @@ class calendar_appointment(models.Model):
     
     @api.multi
     def send_invitation_template(self):
-        template = self.env.ref('calendar_appointment.invitation_model')
-        for attendee in self.calendar_attendee_ids:
-            template.send_mail(attendee.id)
+        if self.meeting_type == 'One2one':
+            template = self.env.ref('calendar_appointment.invitation_model')
+            for attendee in self.calendar_attendee_ids:
+                template.send_mail(attendee.id)
+        elif self.meeting_type == 'Many2one':
+            template = self.env.ref('calendar_appointment.meeting_invitation_model')
+            for attendee in self.calendar_attendee_ids:
+                template.send_mail(attendee.id)
     
     @api.onchange('token')
     def create_token(self):
