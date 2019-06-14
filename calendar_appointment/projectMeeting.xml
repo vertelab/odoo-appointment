@@ -14,8 +14,6 @@
         <script src='/calendar_appointment/static/fullcalendar-4.1.0/packages/core/locales-all.js'/>
         <script>
             
-
-            
           document.addEventListener('DOMContentLoaded', function() {    
           var initialLocaleCode = 'sv';
           var localeSelectorEl = document.getElementById('locale-selector');
@@ -45,54 +43,42 @@
           editable: false,
           eventLimit: true, // allow "more" link when too many events
           
-          eventClick: function(event) {
-          console.log(event);
-          if (event.el.style.backgroundColor == 'green'){
-          
-          selectedSpots.splice(selectedSpots.indexOf(event.event.id),1);
-          selectedSpotsIds.splice(selectedSpotsIds.indexOf(event.event.id), 1);
-          
-          spotIds.value = selectedSpotsIds.join()
-          
-          
-          outputspots.innerHTML = ' '
-          for (spot in selectedSpots) {
-             outputspots.innerHTML += '<tr>'+ selectedSpots[spot].startdate + " - " + selectedSpots[spot].enddate +'</tr>';
-          }
-          
-          
-          event.event.setProp('backgroundColor', '#3788d8');
-          }
-          else{
-          thisEvent = {id : event.event.id, startdate : event.event.start, enddate : event.event.end}
-          selectedSpots.push(thisEvent);
-          selectedSpotsIds.push(thisEvent.id);
-          
-          spotIds.value = selectedSpotsIds.join()
-          alert(event.event.id)
-
-          outputspots.innerHTML = ' '
-          
-          
-          
-          
-          for (spot in selectedSpots) {
-          outputspots.innerHTML += '<tr>'+ selectedSpots[spot].startdate + " - " + selectedSpots[spot].enddate +'</tr>';
-          }
-          
-
-          
-          event.event.setProp('backgroundColor', 'green');
-          }
-          
+          eventClick: function (event) {
+            console.log(event);
+            if (event.event.backgroundColor == 'green') {
+              selectedSpots.splice(selectedSpots.indexOf(event.event.id), 1);
+              selectedSpotsIds.splice(selectedSpotsIds.indexOf(event.event.id), 1);
+              
+              spotIds.value = selectedSpotsIds.join()
+              
+              outputspots.innerHTML = ' '
+              for (spot in selectedSpots) {
+                outputspots.innerHTML += '<tr>' + selectedSpots[spot].startdate + " - " + selectedSpots[spot].enddate + '</tr>';
+              }
+              event.event.setProp('backgroundColor', '#3788d8');
+            } else {
+              thisEvent = {
+                id: event.event.id,
+                startdate: event.event.start,
+                enddate: event.event.end
+              }
+              selectedSpots.push(thisEvent);
+              selectedSpotsIds.push(thisEvent.id);
+              spotIds.value = selectedSpotsIds.join()
+              //alert(event.event.id)
+              outputspots.innerHTML = ' '
+              for (spot in selectedSpots) {
+                outputspots.innerHTML += '<tr>' + selectedSpots[spot].startdate + " - " + selectedSpots[spot].enddate + '</tr>';
+              }
+              event.event.setProp('backgroundColor', 'green');
+            }
           },
           
           events: [
           <t t-foreach="spots" t-as="spot">
             <t t-if="not spot.event_id">
               {
-                
-                title: 
+              title: 
               <t t-esc="''''%s %s','''%(spot.name, len(spot.partner_ids))"/>
               id:
               <t t-esc="''''%s','''%spot.id" />
@@ -108,7 +94,7 @@
           
           calendar.render();
           
-                  // build the locale selector's options
+            // build the locale selector's options
             calendar.getAvailableLocaleCodes().forEach(function(localeCode) {
             var optionEl = document.createElement('option');
             optionEl.value = localeCode;
@@ -158,8 +144,8 @@
 
         </style>
       </t>
-      <body>
-            <div id='top'>
+    <body>
+        <div id='top'>
 
     Locales:
     <select id='locale-selector'></select>
@@ -189,8 +175,8 @@
           </tfoot>
         </table>
       </div>
-      </body>
-    </t>
+    </body>
+  </t>
   </template>
 <template id="meeting_confirmed_booking">
       <t t-call="website.layout">
