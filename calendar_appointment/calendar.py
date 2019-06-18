@@ -21,15 +21,18 @@ class calendar_appointment(models.Model):
     _name = 'calendar.appointment' # Kan förekommer i dropdown t ex
     _description = 'Appointments for calendar'
 
+    def default_user(self):
+        return self.env.user
+
     name = fields.Char(string = 'Name')
     attendee_ids = fields.Many2many(comodel_name ='res.partner') # Comodel_name 
     # ~ product_ids = fields.Many2many(comodel_name = 'product.product') # I detta fall vilken massage som ska bokas in, vi behöver veta duration på produkten.
     spot_ids = fields.One2many(comodel_name = 'calendar.appointment.spot', inverse_name = 'appointment_id')
-    user_id = fields.Many2one(comodel_name = 'res.users', required=True)
+    user_id = fields.Many2one(comodel_name = 'res.users', required=True, default=default_user)
     is_published = fields.Boolean(string = 'Publish') # String represents a label
     description = fields.Text(string = 'Descriptions')
     # B
-    meeting_type = fields.Selection([('One2one', 'One to One'),('Many2one', 'Many to One'),], 'Type Selections') # Ena värdet visa i dropdown och andra lagras i DB:n
+    meeting_type = fields.Selection([('One2one', 'One to One'),('Many2one', 'Many to One'),], string = 'Type Selections', required=True) # Ena värdet visa i dropdown och andra lagras i DB:n
     date_due = fields.Date(string = 'Date Due')
     token = fields.Char()
     calendar_attendee_ids = fields.Many2many(comodel_name='calendar.appointment.attendee', compute='_compute_calendar_attendee_ids')
@@ -63,6 +66,12 @@ class calendar_appointment(models.Model):
     def create_token(self):
             self.token = hashlib.sha1(bytes(str(self.id), 'utf-8')).hexdigest()
     # onchange, default
+    
+    def date_due_scheduled_action(self):
+        appointments = self.search([('date_due', '>=', fields.Date.today())])
+        for appointment in appointments:
+            template = self.env.ref('calendar_appointment.meeting_invitation_model')
+            template.send_mail(self.user_id.id)
     
         
 class calendar_appointment_spot(models.Model):
@@ -238,8 +247,8 @@ class MyController(http.Controller):
         'user_id' : appointment.user_id.id,
         'partner_ids' : [(4, attendee.id, 0), (4, appointment.user_id.partner_id.id, 0)]})
         
-        # ~ template = http.request.env.ref('calendar_appointment.notify_creator')
-        # ~ template.send_mail(appointment.id)
+        template = http.request.env.ref('calendar_appointment.notify_creator')
+        template.send_mail(appointment.id)
         
         spot.event_id = event.id
         

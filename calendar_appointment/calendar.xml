@@ -16,6 +16,25 @@
       ]]>
     </field>
   </record>
+  
+    <record model="mail.template" id="meeting_invitation_model">
+    <field name="name">Invitation email</field>
+    <field name="model_id" ref="model_calendar_appointment_attendee" />
+    <field name="email_from">${object.appointment_id.user_id.email}</field>
+    <field name="subject">Inbjudan till ${object.appointment_id.name}</field>
+    <field name="partner_to">${object.partner_id.id}</field>
+    <field name="lang" />
+    <field name="body_html">
+      <![CDATA[
+               <p>Hej! ${object.partner_id.name}</p>
+               <p>Du är inbjuden till mötet: ${object.appointment_id.name}! </p>
+               <p>Tryck på länken nedan och välj ALLA tider som passar för dig:</p>
+               
+               <a href="http://localhost:8069/meeting/${object.appointment_id.id}/${object.partner_id.id}/${object.appointment_id.token}">Länk</a>
+      ]]>
+    </field>
+  </record>
+  
   <record id="view_calendar_event_form" model="ir.ui.view">
     <field name="name">Calendar event</field>
     <field name="model">calendar.event</field>

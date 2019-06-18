@@ -205,4 +205,17 @@
       ]]>
     </field>
   </record>
+  <record model="mail.template" id="notify_creator">
+    <field name="name">Booking confirmed</field>
+    <field name="model_id" ref="model_calendar_appointment_attendee" />
+    <field name="email_from">${object.appointment_id.user_id.company_name}</field>
+    <field name="subject">Ny bokning med ${object.partner_id.name}</field>
+    <field name="email_to">${object.appointment_id.user_id.email}</field>
+    <field name="lang" />
+    <field name="body_html">
+      <![CDATA[
+      <p>Möte: ${object.appointment_id.name} har fått en ny bokning med ${object.partner_id.name}</p>
+      ]]>
+    </field>
+  </record>
 </odoo>

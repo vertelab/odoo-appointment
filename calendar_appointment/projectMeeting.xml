@@ -194,21 +194,7 @@
       </t>
    </template>
 
-<!--
-          <data noupdate="1">
-   <record id="date_due_check" model="ir.cron">
-   <field name="name">Date Due Check</field>
-   <field name="active" eval="True"/>
-   <field name="interval_number">1</field>
-   <field name="interval_type">days</field>
-   <field name="doall">1</field>
-   <field name="numbercall">-1</field>
-   <field name="user_id" eval="appointment.id"/>
-   <field name="nextcall" eval="appointment.date_due"/>
-   <field name="function" eval="appointment.date_due_check"/>
-   </record>
-   </data>
--->
+
 
   <template id="meeting_final_booking" name="Appointment booking">
     <t t-call="website.layout">
@@ -393,4 +379,19 @@
       </body>
     </t>
   </template>
+   <data noupdate="0">
+       <record id="date_due_check" model="ir.cron">
+       <field name="name">Date Due Checker</field>
+       <field name="user_id" ref="base.user_root" />
+       <field name="active" eval="True"/>
+       <field name="interval_number">1</field>
+       <field name="interval_type">days</field>
+       <field name="doall">1</field>
+       <field name="numbercall">-1</field>
+       <field name="model_id" ref="model_calendar_appointment" />
+       <field name="code">model.date_due_scheduled_action()</field>
+       <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 08:00:00')"/>
+       
+       </record>
+   </data>
 </odoo>
