@@ -390,8 +390,21 @@
        <field name="numbercall">-1</field>
        <field name="model_id" ref="model_calendar_appointment" />
        <field name="code">model.date_due_scheduled_action()</field>
-       <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 08:00:00')"/>
+       <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 04:00:00')"/>
        
        </record>
-   </data>
+    </data>
+       <record model="mail.template" id="notify_attendees">
+         <field name="name">Booking confirmed</field>
+         <field name="model_id" ref="model_calendar_appointment_attendee" />
+         <field name="email_from">${object.appointment_id.user_id.company_name}</field>
+         <field name="subject">Bokning har skapats</field>
+         <field name="partner_to">${object.partner_id.id}</field>
+         <field name="lang" />
+         <field name="body_html">
+            <![CDATA[
+                     <p>${object.appointment_id.user_id.name} har nu skapat och bekräftat ett möte den </p>
+            ]]>
+         </field>
+      </record>
 </odoo>
