@@ -35,6 +35,25 @@
     </field>
   </record>
   
+   <record model="mail.template" id="meeting_booking_model">
+    <field name="name">Invitation email</field>
+    <field name="model_id" ref="model_calendar_appointment" />
+    <field name="email_from">${object.user_id.email}</field>
+    <field name="subject">Dags att boka in tid för mötet: ${object.name}</field>
+    <field name="partner_to">${object.user_id.partner_id.id}</field>
+    <field name="lang" />
+    <field name="body_html">
+      <![CDATA[
+               <p>Hej! ${object.user_id.name}</p>
+               <p>Tiden för tidskollen till ${object.name} har löpt ut. Dags att boka in tid för mötet! </p>
+               <p>I länken nedan finns de 10 mest valda tiderna.</p>
+               <p>Tryck på länken nedan och välj lämplig tid:</p>
+               
+               <a href="http://localhost:8069/meeting/booking/${object.id}/${object.user_id.partner_id.id}/${object.token}">Länk</a>
+      ]]>
+    </field>
+  </record>
+  
   <record id="view_calendar_event_form" model="ir.ui.view">
     <field name="name">Calendar event</field>
     <field name="model">calendar.event</field>
