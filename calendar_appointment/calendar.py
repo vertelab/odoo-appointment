@@ -81,6 +81,7 @@ class calendar_appointment(models.Model):
         appointments = self.env['calendar.appointment'].search([('date_due', '<=', fields.Date.today())])
         template = self.env.ref('calendar_appointment.meeting_booking_model')
         for appointment in appointments:
+            
             template.send_mail(appointment.id)
 
 

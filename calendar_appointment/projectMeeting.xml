@@ -46,8 +46,9 @@
           eventClick: function (event) {
             console.log(event);
             if (event.event.backgroundColor == 'green') {
-              selectedSpots.splice(selectedSpots.indexOf(event.event.id), 1);
+              
               selectedSpotsIds.splice(selectedSpotsIds.indexOf(event.event.id), 1);
+              selectedSpots = selectedSpots.filter(s => s.id !== event.event.id);
               
               spotIds.value = selectedSpotsIds.join()
               
@@ -403,7 +404,7 @@
          <field name="lang" />
          <field name="body_html">
             <![CDATA[
-                     <p>${object.appointment_id.user_id.name} har nu skapat och bekräftat ett möte den </p>
+                     <p>${object.appointment_id.user_id.name} har nu skapat och bekräftat en tid för mötet ${object.appointment_id.name}. Kolla kalendern för tiderna. </p>
             ]]>
          </field>
       </record>
