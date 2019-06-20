@@ -1,0 +1,18 @@
+- Fixa till mailutskicket i användarfall 2 efter att ägaren har bekräftat ett datum för mötet.
+- Lägga till data annontations på alla fält.
+- Fixa tiden i bekräftelsevyn (UTC/Local time problem)
+- Visuell förbättring
+- Fixa eventoverlap vid skapande av spots innan ett existerande event (t.ex ett event pågår mellan 10-12, skapar man ett spot 09.00 som pågår i 2h så overlappar den med eventet. Spotet blir 9-11 och eventet är kvar 10-12)
+- Lägga till så man kan nå spot datumen i mailutskicken.
+
+
+Önskemål från kunden utöver det som står i erp.vertel.se:
+- Massutskick från företagsmailet till kunderna (t.ex marknadsföring/nyhetsbrev, segmentsortera, frekvens av besök)
+- Popup-ruta vid öppna tillfällen för Jollyfood att kunna välja mellan "synliga öppettider, privattid, bokning av kund"
+- Användarvänliga färger, möjlighet att själv kunna ändra färg, grundläggande färger, ändra textfärg, kontrastfärger
+- "Excelark" om kundinformation
+- Analys om antal besökare på hemsidan (vart de kom ifrån etc)
+
+
+
+HELA ANVÄNDARFALL 3 BEHÖVER GÖRAS
